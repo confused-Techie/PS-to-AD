@@ -1,0 +1,19 @@
+{
+  "name": "ps-to-ad",
+  "version": "1.0.0-beta",
+  "description": "PS-to-AD Can be used to help sync data between your PowerSchool Instance and Active Directory",
+  "main": "./src/main.js",
+  "bin": {
+    "ps-to-ad": "bin/ps2ad.js"
+  },
+  "scripts": {
+    "start": "node bin/ps2ad.js"
+  },
+  "author": "confused-Techie",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.2.2",
+    "js-yaml": "^4.1.0",
+    "yargs": "^17.6.2"
+  }
+}
