@@ -7,7 +7,7 @@ function getConfig(configLoc) {
     let data = null;
 
     try {
-      let fileContent = fs.readFileSync(configLog, "utf8");
+      let fileContent = fs.readFileSync(configLoc, "utf8");
       data = yaml.load(fileContent);
     } catch(err) {
       throw err;

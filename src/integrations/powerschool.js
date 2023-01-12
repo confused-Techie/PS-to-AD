@@ -1,7 +1,4 @@
 const axios = require("axios");
-const { inspect } = require("node:util");
-const fs = require("fs");
-const path = require("path");
 
 async function getStaffList(schoolArray, url, access_token) {
   let districtArray = [];
@@ -31,7 +28,7 @@ async function getStaffList(schoolArray, url, access_token) {
 
         staffDetails = await axios({
           method: "get",
-          url: `${url}/ws/v1/school/${school.id}/staff?expansions=emails,addresses,phones,school_affiliations&extensions=u_dyn_schoolstaff_1,u_schoolsataffuserfields`,
+          url: `${url}/ws/v1/school/${school.id}/staff?expansions=emails,addresses,phones,school_affiliations&extensions=u_dyn_schoolstaff_1,u_schoolstaffuserfields`,
           headers: {
             "Authorization": `Bearer ${access_token}`,
             "Accept": "application/json"
@@ -49,8 +46,8 @@ async function getStaffList(schoolArray, url, access_token) {
         schoolID: school.id
       });
 
-      return districtArray;
   }
+  return districtArray;
 }
 
 async function powerschoolCreds(id, secret, url) {
@@ -65,16 +62,18 @@ async function powerschoolCreds(id, secret, url) {
     let resp = await axios.post(`${url}/oauth/access_token`, urlencoded, {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-        "Authorization": `Bearer ${credentials}`
+        "Authorization": `Basic ${credentials}`
       }
     });
 
-    access_token = resp?.data?.access_token;
+    access_token = resp.data.access_token;
+    // TODO: Rebuild these safety nets properly to ensure they still work.
+    //access_token = resp?.data?.access_token;
 
     // Then to ensure our nullish accepting object read doesn't enter a bad value.
-    if (!Object.hasOwn(resp.data) || !Object.hasOwn(resp?.data.access_token)) {
-      access_token = undefined;
-    }
+    //if (!Object.hasOwn(resp.data) || !Object.hasOwn(resp?.data.access_token)) {
+    //  access_token = undefined;
+    //}
 
     return access_token;
 
@@ -87,4 +86,5 @@ async function powerschoolCreds(id, secret, url) {
 
 module.exports = {
   powerschoolCreds,
+  getStaffList,
 };

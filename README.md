@@ -5,3 +5,6 @@ To run the bin:
 To run the script:
 
 `npm start -- --dev_override false`
+
+Quick Notes:
+  - AD employeeNumber will contain he dcid

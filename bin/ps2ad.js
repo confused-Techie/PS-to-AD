@@ -7,6 +7,7 @@ var argv = require("yargs/yargs")(process.argv.slice(2))
             .alias('h', 'help')
             .alias('v', 'version')
             .describe('c', 'Point to a configuration file.')
+            .describe('verbose', 'Verbose logging while running')
             .demandOption([ 'c' ])
             .argv;
 

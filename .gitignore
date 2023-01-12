@@ -1,2 +1,5 @@
 node_modules/
 conf.yml
+# Ignore Application Caches
+.cache/ps_data.json
+.cache/ad_data.json
