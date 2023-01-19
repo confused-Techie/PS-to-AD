@@ -1,16 +1,18 @@
 const configuration = require("./config.js");
 const powerschool = require("./integrations/powerschool.js");
 const activedirectory = require("./integrations/activedirectory.js");
+const compare = require("./integrations/compare.js");
 const log = require("log-utils");
 const fs = require("fs");
 
 const DEFAULT_CACHE_PATH = "./.cache/";
+let VERBOSE = false;
 
 async function run(args) {
   console.log(log.heading('PS-to-AD'));
   console.log(log.ok("- Properly Parsed CLI Parameters"));
 
-  // And now we want to import out Config File.
+  // And now we want to import our Config File.
   let config = await configuration.getConfig(args.config);
 
   if (config === null || config === undefined) {
@@ -29,17 +31,57 @@ async function run(args) {
   }
 
   if (args.verbose || config.app.verbose) {
+    VERBOSE = true;
     console.log(config);
   }
 
-  // Now with a known good config, we will firstly setupPowerSchool
-  //let ps_setup = await setupPowerSchool(config, args);
+  let ps_data = null;
 
-  // And now we need to get the data from Active Directory
-  let ad_setup = await setupAD(config, args);
+  if (args.skip_ps || config.app.skip_ps) {
+    // We are skipping external call, get cache
+    ps_data = JSON.parse(fs.readFileSync(`${args.cache_path ?? config.app.cache_path}/ps_data.json`,
+              { encoding: "utf8" }));
+    console.log("`skip_ps` Set! Skiping Powerschool Data Retreival...");
+  } else {
+    // Now with a known good config, we will firstly setupPowerSchool
+    let ps_data_loc = await setupPowerSchool(config, args);
+    // setupPowerSchool returns the location of data on disk that stores the file.
+    ps_data = JSON.parse(fs.readFileSync(ps_data_loc), { encoding: "utf8" });
+  }
 
-  // Now that AD has fully created the file we care about, now we need to compare
-  // The lists and create or delete as needed.
+  let ad_data = null;
+
+  if (args.skip_ad || config.app.skip_ad) {
+    ad_data = JSON.parse(fs.readFileSync(`${args.cache_path ?? config.app.cache_path}/ad_data.json`), {
+        encoding: 'utf8'
+    });
+    console.log("`skip_ad` Set! Skipping Active Directory Data Retreival...");
+  } else {
+    // And now we need to get the data from Active Directory
+    let ad_return = await setupAD(config, args);
+    // setupAD returns empty, and expects us to find it's file location
+    ad_data = JSON.parse(fs.readFileSync(`${args.cache_path ?? config.app.cache_path}/ad_data.json`), {
+      encoding: "utf8"
+    });
+  }
+
+  /// Now we have collected our to chunks of data.
+  // But the first time run will actually need to do the initial matching of items, whereas
+  // additional runs afterwards will not have to do the same thing.
+
+  if (args.initial || config.app.initial) {
+    // With this option then from here we would need to do the initial migration steps
+    let ad_with_dcid = await compare.initial(ps_data, ad_data, args, config);
+
+    if (VERBOSE) {
+      console.log(log.ok("Initial Migrate Done"));
+      //console.log(ad_with_dcid);
+      fs.writeFileSync(`${config.app.cache_path}/tmp_migrate_data.json`, JSON.stringify(ad_with_dcid, null, 2), { encoding: "utf8"});
+    }
+  } else {
+    // We don't have any initial migrations steps specified. So now we would want to compare
+
+  }
 }
 
 async function setupPowerSchool(config, args) {
@@ -67,13 +109,13 @@ async function setupPowerSchool(config, args) {
     process.exit(1);
   }
 
-  if (args.verbose || config.app.verbose) {
+  if (VERBOSE) {
     console.log(log.ok(`- PowerSchool Access Token: ${ps_auth}`));
   }
 
   // Now with our token, it's time to get the powerschool staff data
 
-  if (args.verbose || config.app.verbose) {
+  if (VERBOSE) {
     console.log(log.heading('Retreive Data from PowerSchool'));
   }
 
