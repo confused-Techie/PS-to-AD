@@ -97,7 +97,9 @@ async function adFindBySAM(ad_data, sam) {
 }
 
 async function adFindByFirstLast(ad_data, first, last) {
+
   for (let i = 0; i < ad_data.length; i++) {
+
     if (ad_data[i]["GivenName"].toLowerCase() === first.toLowerCase() && ad_data[i]["Surname"].toLowerCase() === last.toLowerCase()) {
       return ad_data[i];
     }

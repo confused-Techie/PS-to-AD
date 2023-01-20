@@ -6,7 +6,6 @@ const log = require("log-utils");
 const fs = require("fs");
 
 const DEFAULT_CACHE_PATH = "./.cache/";
-let VERBOSE = false;
 
 async function run(args) {
   console.log(log.heading('PS-to-AD'));
@@ -14,6 +13,8 @@ async function run(args) {
 
   // And now we want to import our Config File.
   let config = await configuration.getConfig(args.config);
+  // Then lets normalize our configuration between CLI ARGS and Config File
+  config = configuration.normalize(args, config);
 
   if (config === null || config === undefined) {
     console.log(`${log.error} - Retreiving the configuration returned 'null'. Check your path again.`);
@@ -30,29 +31,28 @@ async function run(args) {
     config.app.cache_path = DEFAULT_CACHE_PATH;
   }
 
-  if (args.verbose || config.app.verbose) {
-    VERBOSE = true;
+  if (config.app.verbose) {
     console.log(config);
   }
 
   let ps_data = null;
 
-  if (args.skip_ps || config.app.skip_ps) {
+  if (config.app.skip_ps) {
     // We are skipping external call, get cache
-    ps_data = JSON.parse(fs.readFileSync(`${args.cache_path ?? config.app.cache_path}/ps_data.json`,
+    ps_data = JSON.parse(fs.readFileSync(`${config.app.cache_path}/ps_data.json`,
               { encoding: "utf8" }));
     console.log("`skip_ps` Set! Skiping Powerschool Data Retreival...");
   } else {
     // Now with a known good config, we will firstly setupPowerSchool
-    let ps_data_loc = await setupPowerSchool(config, args);
+    let ps_data_loc = await setupPowerSchool(config);
     // setupPowerSchool returns the location of data on disk that stores the file.
     ps_data = JSON.parse(fs.readFileSync(ps_data_loc), { encoding: "utf8" });
   }
 
   let ad_data = null;
 
-  if (args.skip_ad || config.app.skip_ad) {
-    ad_data = JSON.parse(fs.readFileSync(`${args.cache_path ?? config.app.cache_path}/ad_data.json`), {
+  if (config.app.skip_ad) {
+    ad_data = JSON.parse(fs.readFileSync(`${config.app.cache_path}/ad_data.json`), {
         encoding: 'utf8'
     });
     console.log("`skip_ad` Set! Skipping Active Directory Data Retreival...");
@@ -60,7 +60,7 @@ async function run(args) {
     // And now we need to get the data from Active Directory
     let ad_return = await setupAD(config, args);
     // setupAD returns empty, and expects us to find it's file location
-    ad_data = JSON.parse(fs.readFileSync(`${args.cache_path ?? config.app.cache_path}/ad_data.json`), {
+    ad_data = JSON.parse(fs.readFileSync(`${config.app.cache_path}/ad_data.json`), {
       encoding: "utf8"
     });
   }
@@ -69,11 +69,11 @@ async function run(args) {
   // But the first time run will actually need to do the initial matching of items, whereas
   // additional runs afterwards will not have to do the same thing.
 
-  if (args.initial || config.app.initial) {
+  if (config.app.initial) {
     // With this option then from here we would need to do the initial migration steps
     let ad_with_dcid = await compare.initial(ps_data, ad_data, args, config);
 
-    if (VERBOSE) {
+    if (config.app.verbose) {
       console.log(log.ok("Initial Migrate Done"));
       //console.log(ad_with_dcid);
       fs.writeFileSync(`${config.app.cache_path}/tmp_migrate_data.json`, JSON.stringify(ad_with_dcid, null, 2), { encoding: "utf8"});
@@ -84,13 +84,13 @@ async function run(args) {
   }
 }
 
-async function setupPowerSchool(config, args) {
+async function setupPowerSchool(config) {
   // Now lets make sure we have the credentials needed for powerschool and that
   // they can be transformed successfully.
   if (typeof config.server.id !== "string" || typeof config.server.secret !== "string" || typeof config.server.url !== "string") {
     console.log(`${log.error} - Failed to confirm type validity of PowerSchool ID, Secret, or URL`);
 
-    if (args.verbose || config.app.verbose) {
+    if (config.app.verbose) {
       console.log(`${ typeof config.server.id !== "string" ? log.error : log.success} [${typeof config.server.id}] - Server ID: ${config.server.id}`);
       console.log(`${typeof config.server.secret !== "string" ? log.error : log.success} [${typeof config.server.secret}] - Server Secret: ${config.server.secret}`);
       console.log(`${typeof config.server.url !== "string" ? log.error : log.success} [${typeof config.server.url}] - Server URL: ${config.server.url}`);
@@ -109,13 +109,13 @@ async function setupPowerSchool(config, args) {
     process.exit(1);
   }
 
-  if (VERBOSE) {
+  if (config.app.verbose) {
     console.log(log.ok(`- PowerSchool Access Token: ${ps_auth}`));
   }
 
   // Now with our token, it's time to get the powerschool staff data
 
-  if (VERBOSE) {
+  if (config.app.verbose) {
     console.log(log.heading('Retreive Data from PowerSchool'));
   }
 
@@ -130,7 +130,7 @@ async function setupPowerSchool(config, args) {
   return `${config.app.cache_path}/ps_data.json`;
 }
 
-async function setupAD(config, args) {
+async function setupAD(config) {
 
   await activedirectory.getStaffList(config)
     .then((res) => {
