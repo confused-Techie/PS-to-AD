@@ -1,3 +1,8 @@
+/**
+ * @module main
+ * @desc This is invoked by `./bin/ps2ad.js` or by requirng the main module from another.
+ * Which will export the function `run` to be called to kick off our script process.
+ */
 const configuration = require("./config.js");
 const powerschool = require("./integrations/powerschool.js");
 const activedirectory = require("./integrations/activedirectory.js");
@@ -7,6 +12,15 @@ const fs = require("fs");
 
 const DEFAULT_CACHE_PATH = "./.cache/";
 
+/**
+ * @function run
+ * @async
+ * @desc Like described in the top level module definition, this function is the
+ * main handler to kick off the application lifetime.
+ * @param {object} args - The Arguments to pass to the entire application. Valid
+ * key value pairs described further in documentation.
+ * @returns {TBD} - TDB
+ */
 async function run(args) {
   console.log(log.heading("PS-to-AD"));
   console.log(log.ok("- Properly Parsed CLI Parameters"));
@@ -103,6 +117,15 @@ async function run(args) {
   }
 }
 
+/**
+ * @function setupPowerSchool
+ * @async
+ * @desc This function is in charge of retreiving and saving up to date information
+ * from PowerSchool. Which once done will be saved to the configured `cache`
+ * @param {object} config - The configuration previously provided by `run()`
+ * with the same structured data.
+ * @returns {string} - A Path the where the data has been written from PowerSchool.
+ */
 async function setupPowerSchool(config) {
   // Now lets make sure we have the credentials needed for powerschool and that
   // they can be transformed successfully.
@@ -183,6 +206,14 @@ async function setupPowerSchool(config) {
   return `${config.app.cache_path}/ps_data.json`;
 }
 
+/**
+ * @function setupAD
+ * @async
+ * @desc A redirect and chained promise around functions exposed from `activedirectory`
+ * to access get AD Data saved to disk. On success the return is empty, otherwise throws error.
+ * @params {object} config - Our Config Object 
+ * @returns {} - Empty set of data on success
+ */
 async function setupAD(config) {
   await activedirectory
     .getStaffList(config)

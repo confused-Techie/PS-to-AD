@@ -1,6 +1,19 @@
+/**
+ * @module conifg
+ * @desc This module exports utilities helpful for finding and managing the application
+ * configuration.
+ */
+
 const fs = require("fs");
 const yaml = require("js-yaml");
 
+/**
+ * @function getConfig
+ * @desc The main function that actually exports the configuration.
+ * @param {string} configLoc - The user defined, or default file system location
+ * of the configuration file.
+ * @returns {object} Returns the YAML Parsed file, or will error if no data is found.
+ */
 function getConfig(configLoc) {
   try {
     let data = null;
@@ -18,6 +31,14 @@ function getConfig(configLoc) {
   }
 }
 
+/**
+ * @function normalize
+ * @desc This function takes the contents of the return for `getConfig` and the object
+ * passed user config and will combine them into a single configuration.
+ * Always prioritizing CLI parameters over Config File
+ * @param {object} args - The arguments from the CLI.
+ * @param {object} config - The configuration from the file system.
+ */
 function normalize(args, config) {
   // Takes a Config file and CLI Arguments
   // normalizing the data into a single object.
