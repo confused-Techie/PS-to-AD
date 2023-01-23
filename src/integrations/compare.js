@@ -56,24 +56,15 @@ async function initial(ps_data, ad_data, args, config) {
             typeof config.app.domain === "string" ||
             typeof args.domain === "string"
           ) {
-            // Since a domain is set, lets see if it's within our username, and trunicate prior to usage for sam lookup.
-            //console.log(`Username: ${username} - Check: ${username.endsWith("@beardsley.k12.ca.us")} - True Check: ${username.endsWith(config.app.domain ?? args.domain)}`);
+            // Since a domain is set, lets see if it's within our username,
+            //and trunicate prior to usage for sam lookup.
+
             if (username.endsWith(config.app.domain ?? args.domain)) {
               username = username.replace(config.app.domain ?? args.domain, "");
               username = username.replace("@", "");
             }
           }
 
-          // let usernameMatch = await adFindBySAM(ad_data, username);
-
-          // if (usernameMatch === null) {
-          // We failed to find a match for this user. Lets log
-          // change_table.push({
-          // status: false,
-          // msg: `Unable to locate: ${user?.name.first_name} ${user?.name.last_name} under ${username} within AD. School: ${school.schoolName}`
-          // });
-          // continue;
-          // }
           let nameMatch = await adFindByFirstLast(
             ad_data,
             user?.name?.first_name,
@@ -95,16 +86,6 @@ async function initial(ps_data, ad_data, args, config) {
     `Successful Matches: ${goodMatch} -- Unsuccessful Matches: ${badMatch}`
   );
   return change_table;
-}
-
-async function adFindBySAM(ad_data, sam) {
-  // This simple utility function can search ad_data for a SAM matching the string provided.
-  for (let i = 0; i < ad_data.length; i++) {
-    if (ad_data[i]["SamAccountName"].toLowerCase() === sam.toLowerCase()) {
-      return ad_data[i];
-    }
-  }
-  return null;
 }
 
 async function adFindByFirstLast(ad_data, first, last) {

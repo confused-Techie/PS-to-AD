@@ -33,11 +33,15 @@ server:
   url: "Power_School_URL"
 app:
   verbose: true|false
-  skip_ps: true|false // Skip PowerSchell logging
-  initial: true|false ?/ Weather or not to complete first time migration
+  skip_ps: true|false # Skip PowerSchell logging
+  initial: true|false # Weather or not to complete first time migration
   cache_path: "The path for all cahced data storage."
   domain: "OPTIONAL - Email Domaain"
   algo: "Algoritm used to compare and migrate the data checked."
 ad_scripts:
   user_list: "Path to a script that will output users into the `cache` folder."
 ```
+
+# Developer Notes
+
+This Project uses [JSDoc](https://jsdoc.app/index.html) within Code to keep documentation.
