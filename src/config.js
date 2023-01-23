@@ -3,19 +3,17 @@ const yaml = require("js-yaml");
 
 function getConfig(configLoc) {
   try {
-
     let data = null;
 
     try {
       let fileContent = fs.readFileSync(configLoc, "utf8");
       data = yaml.load(fileContent);
-    } catch(err) {
+    } catch (err) {
       throw err;
     }
 
     return data;
-
-  } catch(err) {
+  } catch (err) {
     throw err;
   }
 }
@@ -29,7 +27,7 @@ function normalize(args, config) {
     server: {
       id: args.server_id ?? config.server?.id,
       secret: args.server_secret ?? config.server?.secret,
-      url: args.server_url ?? config.server?.url
+      url: args.server_url ?? config.server?.url,
     },
     app: {
       verbose: args.verbose ?? config.app?.verbose,
@@ -38,11 +36,11 @@ function normalize(args, config) {
       initial: args.initial ?? config.app?.initial,
       cache_path: args.cache_path ?? config.app?.cache_path,
       domain: args.domain ?? config.app?.domain,
-      algo: args.algo ?? config.app?.algo
+      algo: args.algo ?? config.app?.algo,
     },
     ad_scripts: {
-      user_list: args.ad_script_user_list ?? config?.ad_scripts?.user_list
-    }
+      user_list: args.ad_script_user_list ?? config?.ad_scripts?.user_list,
+    },
   };
 }
 

@@ -7,7 +7,8 @@
     "ps-to-ad": "bin/ps2ad.js"
   },
   "scripts": {
-    "start": "node bin/ps2ad.js"
+    "start": "node bin/ps2ad.js",
+    "lint": "prettier --check -u -w ."
   },
   "author": "confused-Techie",
   "license": "MIT",
@@ -17,5 +18,8 @@
     "log-utils": "^1.0.0",
     "node-windows": "^1.0.0-beta.8",
     "yargs": "^17.6.2"
+  },
+  "devDependencies": {
+    "prettier": "^2.8.3"
   }
 }
