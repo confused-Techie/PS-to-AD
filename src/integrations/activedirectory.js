@@ -1,6 +1,17 @@
+/**
+ * @module activedirectory
+ * @desc Exposes the utilities to integrate with Active Directory
+ */
+
 const win = require("node-windows");
 const child_process = require("node:child_process");
 
+/**
+ * @function checkProcessStatus
+ * @async
+ * @desc A currently unused function used to check if the current process running NodeJS is an admin.
+ * @returns {object} A server status object where `ok` is true or false based on success.
+ */
 async function checkProcessStatus() {
   // This should be used to ensure we have any permissions needed to run the process.
   // Essentially checkin if we are in an admin process, or if we need to get ourselves
@@ -26,30 +37,13 @@ async function checkProcessStatus() {
   }
 }
 
-async function getStaffListOLD(config) {
-  // We then want to start an elevted process to read the entire AD
-
-  try {
-    child_process.execFile(
-      config.ad_scripts.user_list,
-      { shell: "powershell.exe" },
-      (error, stdout, stderr) => {
-        if (error) {
-          throw error;
-          process.exit(1);
-        }
-
-        console.log(`stdout: ${stdout}`);
-        console.log(`stderr: ${stderr}`);
-        return "Success";
-      }
-    );
-  } catch (err) {
-    throw err;
-    process.exit(1);
-  }
-}
-
+/**
+ * @function getStaffList
+ * @async
+ * @desc A function wrapping a promise that resolves after successfully running
+ * the powershell command based on the configuration's script.
+ * @returns {string} - ' Success'
+ */
 async function getStaffList(config) {
   return new Promise((resolve, reject) => {
     // We then want to start the user defined script to get the AD users we care about
