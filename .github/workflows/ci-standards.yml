@@ -4,7 +4,7 @@ name: CI - Standards
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   standards:
@@ -17,24 +17,24 @@ jobs:
         node-version: [16.x]
 
     steps:
-    - name: Checkout the Latest Code
-      uses: actions/checkout@v3
+      - name: Checkout the Latest Code
+        uses: actions/checkout@v3
 
-    - name: Setup NodeJS - ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: Setup NodeJS - ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
 
-    - name: Install Dependencies
-      run: npm install
+      - name: Install Dependencies
+        run: npm install
 
-    - name: Lint Codebase
-      run: npm run lint
+      - name: Lint Codebase
+        run: npm run lint
 
-    - name: Generate JSDocs
-      run: npm run js-docs
+      - name: Generate JSDocs
+        run: npm run js-docs
 
-    - name: Commit All Changes
-      uses: stefanzweifel/git-auto-commit-action@v4
-      with:
-        commit_message: GH Action Standards
+      - name: Commit All Changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: GH Action Standards

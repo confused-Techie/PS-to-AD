@@ -65,9 +65,7 @@ async function initial(ps_data, ad_data, config) {
 
           // Since we know we are looking for a SAM in a moment, which will not include any email domains.
           // Lets optionally take a domain from our config to trunicate.
-          if (
-            typeof config.app?.domain === "string"
-          ) {
+          if (typeof config.app?.domain === "string") {
             // Since a domain is set, lets see if it's within our username,
             //and trunicate prior to usage for sam lookup.
 

@@ -10,7 +10,6 @@ Quick Notes:
 
 - AD employeeNumber will contain he dcid
 
-
 Example Command: (Local)
 `npm start -- -c './conf.yaml'`
 
