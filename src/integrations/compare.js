@@ -8,7 +8,20 @@ async function compare(config, args) {
   // use this
 }
 
-async function initial(ps_data, ad_data, args, config) {
+/**
+ * @function initial
+ * @async
+ * @desc This function is used during the initial migration only.
+ * Essentially looping through both ways of the PS and AD data to identify
+ * automatically whatever is possible, and for what fails to be automatically matched
+ * will instead output to a file as needed.
+ * @param {object} ps_data - The PowerSchool Data Object as read from disk.
+ * @param {object} ad_data - The ActiveDirectory Data Object as read from disk.
+ * @param {object} config - The normalized config
+ * @returns {object} Will return a `change_table` an object structure of changes
+ * waiting to take effect.
+ */
+async function initial(ps_data, ad_data, config) {
   // This function is used during the initial migration.
   // Needs to be able to dynamically check the data for any potential matches.
 
@@ -18,9 +31,9 @@ async function initial(ps_data, ad_data, args, config) {
   let goodMatch = 0;
   let badMatch = 0; // testing vars
 
-  if (args.algo || config.app.algo) {
+  if (config.app?.algo) {
     // this checks that either on is Truthy, or otherwise has any value
-    METHOD = args.algo ?? config.app.algo;
+    METHOD = config.app.algo;
   }
 
   switch (METHOD) {
@@ -53,14 +66,13 @@ async function initial(ps_data, ad_data, args, config) {
           // Since we know we are looking for a SAM in a moment, which will not include any email domains.
           // Lets optionally take a domain from our config to trunicate.
           if (
-            typeof config.app.domain === "string" ||
-            typeof args.domain === "string"
+            typeof config.app?.domain === "string"
           ) {
             // Since a domain is set, lets see if it's within our username,
             //and trunicate prior to usage for sam lookup.
 
-            if (username.endsWith(config.app.domain ?? args.domain)) {
-              username = username.replace(config.app.domain ?? args.domain, "");
+            if (username.endsWith(config.app.domain)) {
+              username = username.replace(config.app.domain, "");
               username = username.replace("@", "");
             }
           }
@@ -88,6 +100,17 @@ async function initial(ps_data, ad_data, args, config) {
   return change_table;
 }
 
+/**
+ * @async
+ * @function adFindByFirstLast
+ * @desc Takes an Active Directory Data Object and iterates through it
+ * until it is able to find a proper match to the first and last name provided.
+ * @param {object} ad_data - The ActiveDirectory Object as Read from Disk.
+ * @param {string} first - The First name to match
+ * @param {string} last - The Last Name to Match
+ * @returns {object|null} Returns either the properly indexed location for the entry
+ * within the provided ad_data or will return `null`
+ */
 async function adFindByFirstLast(ad_data, first, last) {
   for (let i = 0; i < ad_data.length; i++) {
     if (

@@ -101,7 +101,7 @@ async function run(args) {
 
   if (config.app.initial) {
     // With this option then from here we would need to do the initial migration steps
-    let ad_with_dcid = await compare.initial(ps_data, ad_data, args, config);
+    let ad_with_dcid = await compare.initial(ps_data, ad_data, config);
 
     if (config.app.verbose) {
       console.log(log.ok("Initial Migrate Done"));
@@ -211,7 +211,7 @@ async function setupPowerSchool(config) {
  * @async
  * @desc A redirect and chained promise around functions exposed from `activedirectory`
  * to access get AD Data saved to disk. On success the return is empty, otherwise throws error.
- * @params {object} config - Our Config Object 
+ * @params {object} config - Our Config Object
  * @returns {} - Empty set of data on success
  */
 async function setupAD(config) {
