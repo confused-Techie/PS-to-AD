@@ -1,97 +1,82 @@
 ## Modules
 
 <dl>
-<dt><a href="#module_conifg">conifg</a></dt>
-<dd><p>This module exports utilities helpful for finding and managing the application
-configuration.</p>
-</dd>
-<dt><a href="#module_main">main</a></dt>
-<dd><p>This is invoked by <code>./bin/ps2ad.js</code> or by requirng the main module from another.
-Which will export the function <code>run</code> to be called to kick off our script process.</p>
+<dt><a href="#module_activedirectory">activedirectory</a></dt>
+<dd><p>Exposes the utilities to integrate with Active Directory</p>
 </dd>
 </dl>
 
-<a name="module_conifg"></a>
+## Functions
 
-## conifg
-This module exports utilities helpful for finding and managing the application
-configuration.
+<dl>
+<dt><a href="#initial">initial(ps_data, ad_data, config)</a> ⇒ <code>object</code></dt>
+<dd><p>This function is used during the initial migration only.
+Essentially looping through both ways of the PS and AD data to identify
+automatically whatever is possible, and for what fails to be automatically matched
+will instead output to a file as needed.</p>
+</dd>
+<dt><a href="#adFindByFirstLast">adFindByFirstLast(ad_data, first, last)</a> ⇒ <code>object</code> | <code>null</code></dt>
+<dd><p>Takes an Active Directory Data Object and iterates through it
+until it is able to find a proper match to the first and last name provided.</p>
+</dd>
+</dl>
 
+<a name="module_activedirectory"></a>
 
-* [conifg](#module_conifg)
-    * [~getConfig(configLoc)](#module_conifg..getConfig) ⇒ <code>object</code>
-    * [~normalize(args, config)](#module_conifg..normalize)
-
-<a name="module_conifg..getConfig"></a>
-
-### conifg~getConfig(configLoc) ⇒ <code>object</code>
-The main function that actually exports the configuration.
-
-**Kind**: inner method of [<code>conifg</code>](#module_conifg)  
-**Returns**: <code>object</code> - Returns the YAML Parsed file, or will error if no data is found.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| configLoc | <code>string</code> | The user defined, or default file system location of the configuration file. |
-
-<a name="module_conifg..normalize"></a>
-
-### conifg~normalize(args, config)
-This function takes the contents of the return for `getConfig` and the object
-passed user config and will combine them into a single configuration.
-Always prioritizing CLI parameters over Config File
-
-**Kind**: inner method of [<code>conifg</code>](#module_conifg)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| args | <code>object</code> | The arguments from the CLI. |
-| config | <code>object</code> | The configuration from the file system. |
-
-<a name="module_main"></a>
-
-## main
-This is invoked by `./bin/ps2ad.js` or by requirng the main module from another.
-Which will export the function `run` to be called to kick off our script process.
+## activedirectory
+Exposes the utilities to integrate with Active Directory
 
 
-* [main](#module_main)
-    * [~run(args)](#module_main..run) ⇒ <code>TBD</code>
-    * [~setupPowerSchool(config)](#module_main..setupPowerSchool) ⇒ <code>string</code>
-    * [~setupAD()](#module_main..setupAD) ⇒
+* [activedirectory](#module_activedirectory)
+    * [~checkProcessStatus()](#module_activedirectory..checkProcessStatus) ⇒ <code>object</code>
+    * [~getStaffList()](#module_activedirectory..getStaffList) ⇒ <code>string</code>
 
-<a name="module_main..run"></a>
+<a name="module_activedirectory..checkProcessStatus"></a>
 
-### main~run(args) ⇒ <code>TBD</code>
-Like described in the top level module definition, this function is the
-main handler to kick off the application lifetime.
+### activedirectory~checkProcessStatus() ⇒ <code>object</code>
+A currently unused function used to check if the current process running NodeJS is an admin.
 
-**Kind**: inner method of [<code>main</code>](#module_main)  
-**Returns**: <code>TBD</code> - - TDB  
+**Kind**: inner method of [<code>activedirectory</code>](#module_activedirectory)  
+**Returns**: <code>object</code> - A server status object where `ok` is true or false based on success.  
+<a name="module_activedirectory..getStaffList"></a>
+
+### activedirectory~getStaffList() ⇒ <code>string</code>
+A function wrapping a promise that resolves after successfully running
+the powershell command based on the configuration's script.
+
+**Kind**: inner method of [<code>activedirectory</code>](#module_activedirectory)  
+**Returns**: <code>string</code> - - ' Success'  
+<a name="initial"></a>
+
+## initial(ps_data, ad_data, config) ⇒ <code>object</code>
+This function is used during the initial migration only.
+Essentially looping through both ways of the PS and AD data to identify
+automatically whatever is possible, and for what fails to be automatically matched
+will instead output to a file as needed.
+
+**Kind**: global function  
+**Returns**: <code>object</code> - Will return a `change_table` an object structure of changes
+waiting to take effect.  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| args | <code>object</code> | The Arguments to pass to the entire application. Valid key value pairs described further in documentation. |
+| ps_data | <code>object</code> | The PowerSchool Data Object as read from disk. |
+| ad_data | <code>object</code> | The ActiveDirectory Data Object as read from disk. |
+| config | <code>object</code> | The normalized config |
 
-<a name="module_main..setupPowerSchool"></a>
+<a name="adFindByFirstLast"></a>
 
-### main~setupPowerSchool(config) ⇒ <code>string</code>
-This function is in charge of retreiving and saving up to date information
-from PowerSchool. Which once done will be saved to the configured `cache`
+## adFindByFirstLast(ad_data, first, last) ⇒ <code>object</code> \| <code>null</code>
+Takes an Active Directory Data Object and iterates through it
+until it is able to find a proper match to the first and last name provided.
 
-**Kind**: inner method of [<code>main</code>](#module_main)  
-**Returns**: <code>string</code> - - A Path the where the data has been written from PowerSchool.  
+**Kind**: global function  
+**Returns**: <code>object</code> \| <code>null</code> - Returns either the properly indexed location for the entry
+within the provided ad_data or will return `null`  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| config | <code>object</code> | The configuration previously provided by `run()` with the same structured data. |
+| ad_data | <code>object</code> | The ActiveDirectory Object as Read from Disk. |
+| first | <code>string</code> | The First name to match |
+| last | <code>string</code> | The Last Name to Match |
 
-<a name="module_main..setupAD"></a>
-
-### main~setupAD() ⇒
-A redirect and chained promise around functions exposed from `activedirectory`
-to access get AD Data saved to disk. On success the return is empty, otherwise throws error.
-
-**Kind**: inner method of [<code>main</code>](#module_main)  
-**Returns**: - Empty set of data on success  
-**Params**: <code>object</code> config - Our Config Object  
