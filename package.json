@@ -8,7 +8,8 @@
   },
   "scripts": {
     "start": "node bin/ps2ad.js",
-    "lint": "prettier --check -u -w ."
+    "lint": "prettier --check -u -w .",
+    "js-docs": "jsdoc2md ./src/*.js > ./docs/Source_Documentation.md"
   },
   "author": "confused-Techie",
   "license": "MIT",
@@ -20,6 +21,7 @@
     "yargs": "^17.6.2"
   },
   "devDependencies": {
+    "jsdoc-to-markdown": "^8.0.0",
     "prettier": "^2.8.3"
   }
 }
