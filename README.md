@@ -8,7 +8,7 @@ To run the script:
 
 Quick Notes:
 
-- AD employeeNumber will contain he dcid
+- AD employeeNumber will contain the dcid
 
 Example Command: (Local)
 `npm start -- -c './conf.yaml'`
@@ -41,6 +41,6 @@ ad_scripts:
   user_list: "Path to a script that will output users into the `cache` folder."
 ```
 
-# Developer Notes
+## Developer Notes
 
 This Project uses [JSDoc](https://jsdoc.app/index.html) within Code to keep documentation.

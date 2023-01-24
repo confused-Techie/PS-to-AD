@@ -9,7 +9,7 @@
   "scripts": {
     "start": "node bin/ps2ad.js",
     "lint": "prettier --check -u -w .",
-    "js-docs": "jsdoc2md ./src/*.js > ./docs/Source_Documentation.md"
+    "js-docs": "jsdoc2md ./src/**/*.js > ./docs/Source_Documentation.md"
   },
   "author": "confused-Techie",
   "license": "MIT",
