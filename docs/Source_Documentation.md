@@ -1,11 +1,3 @@
-## Constants
-
-<dl>
-<dt><a href="#win">win</a></dt>
-<dd><p>Exposes the utilities to integrate with Active Directory</p>
-</dd>
-</dl>
-
 ## Functions
 
 <dl>
@@ -48,13 +40,6 @@ until it is able to find a proper match to the first and last name provided.</p>
 </dd>
 </dl>
 
-<a name="win"></a>
-
-## win
-Exposes the utilities to integrate with Active Directory
-
-**Kind**: global constant  
-**Filee**: activedirectory  
 <a name="getConfig"></a>
 
 ## getConfig(configLoc) ⇒ <code>object</code>
