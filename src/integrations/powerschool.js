@@ -1,6 +1,5 @@
 /**
- * @file powerschool.js
- * @desc Contains the functions used for interacting directly with PowerSchool.
+ * @file Contains the functions used for interacting directly with PowerSchool.
  */
 
 const axios = require("axios");

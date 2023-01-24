@@ -1,8 +1,8 @@
 /**
- * @file main
- * @desc This is invoked by `./bin/ps2ad.js` or by requirng the main module from another.
+ * @file This is invoked by `./bin/ps2ad.js` or by requirng the main module from another.
  * Which will export the function `run` to be called to kick off our script process.
  */
+
 const configuration = require("./config.js");
 const powerschool = require("./integrations/powerschool.js");
 const activedirectory = require("./integrations/activedirectory.js");

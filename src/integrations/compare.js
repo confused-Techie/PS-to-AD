@@ -1,6 +1,5 @@
 /**
- * @file compare.js
- * @desc This contains the functions used for comparison and matching.
+ * @file This contains the functions used for comparison and matching.
  */
 
 async function compare(config, args) {

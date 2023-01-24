@@ -1,6 +1,5 @@
 /**
- * @filee activedirectory
- * @desc Exposes the utilities to integrate with Active Directory
+ * @file Exposes the utilities to integrate with Active Directory
  */
 
 const win = require("node-windows");
