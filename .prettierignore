@@ -1,0 +1,10 @@
+# Ignore Markdown
+*.md
+# Ignore all Cached data on local systems
+.cache/
+# Ignore some obvious stuff
+node_modules/
+.git/
+.gitignore
+.gitattributes
+.github/

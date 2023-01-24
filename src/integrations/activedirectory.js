@@ -1,5 +1,5 @@
 /**
- * @module activedirectory
+ * @filee activedirectory
  * @desc Exposes the utilities to integrate with Active Directory
  */
 

@@ -1,5 +1,5 @@
 /**
- * @module conifg
+ * @file conifg
  * @desc This module exports utilities helpful for finding and managing the application
  * configuration.
  */

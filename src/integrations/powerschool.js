@@ -1,3 +1,8 @@
+/**
+ * @file powerschool.js
+ * @desc Contains the functions used for interacting directly with PowerSchool.
+ */
+ 
 const axios = require("axios");
 
 async function getStaffList(schoolArray, url, access_token) {

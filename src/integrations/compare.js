@@ -1,3 +1,8 @@
+/**
+ * @file compare.js
+ * @desc This contains the functions used for comparison and matching.
+ */
+ 
 async function compare(config, args) {
   // The comparison function here needs to take the saved cached files of AD Data
   // and PS Data, and find the items that match up between them.
