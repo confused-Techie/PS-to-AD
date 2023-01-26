@@ -18,14 +18,15 @@ main handler to kick off the application lifetime.</p>
 from PowerSchool. Which once done will be saved to the configured <code>cache</code></p>
 </dd>
 <dt><a href="#setupAD">setupAD()</a> ⇒</dt>
-<dd><p>A redirect and chained promise around functions exposed from <code>activedirectory</code>
-to access get AD Data saved to disk. On success the return is empty, otherwise throws error.</p>
+<dd><p>A redirect and chained promise around functions exposed from
+<code>activedirectory</code> to access get AD Data saved to disk.
+On success the return is empty, otherwise throws error.</p>
 </dd>
 <dt><a href="#getStaffList">getStaffList()</a> ⇒ <code>string</code></dt>
 <dd><p>A function wrapping a promise that resolves after successfully running
 the powershell command based on the configuration&#39;s script.</p>
 </dd>
-<dt><a href="#initial">initial(ps_data, ad_data, config)</a> ⇒ <code>object</code></dt>
+<dt><a href="#initial">initial(psData, adData, config)</a> ⇒ <code>object</code></dt>
 <dd><p>This function is used during the initial migration only.
 Essentially looping through both ways of the PS and AD data to identify
 automatically whatever is possible, and for what fails to be automatically matched
@@ -92,8 +93,9 @@ from PowerSchool. Which once done will be saved to the configured `cache`
 <a name="setupAD"></a>
 
 ## setupAD() ⇒
-A redirect and chained promise around functions exposed from `activedirectory`
-to access get AD Data saved to disk. On success the return is empty, otherwise throws error.
+A redirect and chained promise around functions exposed from
+`activedirectory` to access get AD Data saved to disk.
+On success the return is empty, otherwise throws error.
 
 **Kind**: global function  
 **Returns**: - Empty set of data on success  
@@ -108,7 +110,7 @@ the powershell command based on the configuration's script.
 **Returns**: <code>string</code> - - ' Success'  
 <a name="initial"></a>
 
-## initial(ps_data, ad_data, config) ⇒ <code>object</code>
+## initial(psData, adData, config) ⇒ <code>object</code>
 This function is used during the initial migration only.
 Essentially looping through both ways of the PS and AD data to identify
 automatically whatever is possible, and for what fails to be automatically matched
@@ -120,8 +122,8 @@ waiting to take effect.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| ps_data | <code>object</code> | The PowerSchool Data Object as read from disk. |
-| ad_data | <code>object</code> | The ActiveDirectory Data Object as read from disk. |
+| psData | <code>object</code> | The PowerSchool Data Object as read from disk. |
+| adData | <code>object</code> | The ActiveDirectory Data Object as read from disk. |
 | config | <code>object</code> | The normalized config |
 
 <a name="adFindByFirstLast"></a>
