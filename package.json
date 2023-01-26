@@ -58,7 +58,10 @@
       "no-process-exit": 0,
       "camelcase": 1,
       "no-ternary": 0,
-      "max-len": ["error", 110],
+      "max-len": [
+        "error",
+        110
+      ],
       "strict": 0,
       "sort-keys": 0,
       "max-lines": 0,
