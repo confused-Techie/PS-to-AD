@@ -21,9 +21,6 @@ from PowerSchool. Which once done will be saved to the configured <code>cache</c
 <dd><p>A redirect and chained promise around functions exposed from <code>activedirectory</code>
 to access get AD Data saved to disk. On success the return is empty, otherwise throws error.</p>
 </dd>
-<dt><a href="#checkProcessStatus">checkProcessStatus()</a> ⇒ <code>object</code></dt>
-<dd><p>A currently unused function used to check if the current process running NodeJS is an admin.</p>
-</dd>
 <dt><a href="#getStaffList">getStaffList()</a> ⇒ <code>string</code></dt>
 <dd><p>A function wrapping a promise that resolves after successfully running
 the powershell command based on the configuration&#39;s script.</p>
@@ -101,13 +98,6 @@ to access get AD Data saved to disk. On success the return is empty, otherwise t
 **Kind**: global function  
 **Returns**: - Empty set of data on success  
 **Params**: <code>object</code> config - Our Config Object  
-<a name="checkProcessStatus"></a>
-
-## checkProcessStatus() ⇒ <code>object</code>
-A currently unused function used to check if the current process running NodeJS is an admin.
-
-**Kind**: global function  
-**Returns**: <code>object</code> - A server status object where `ok` is true or false based on success.  
 <a name="getStaffList"></a>
 
 ## getStaffList() ⇒ <code>string</code>
