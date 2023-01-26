@@ -172,14 +172,14 @@ async function setupPowerSchool(config) {
     process.exit(1);
   }
 
-  let ps_auth = await powerschool.powerschoolCreds(
+  let psAuth = await powerschool.powerschoolCreds(
     config.server.id,
     config.server.secret,
     config.server.url
   );
   console.log(log.ok("- Successfully retreived Access Token from PowerSchool"));
 
-  if (ps_auth === undefined) {
+  if (psAuth === undefined) {
     // ps_auth is initialized as undefined within our integration, so we check
     // explicitly for it
     console.log(
@@ -189,7 +189,7 @@ async function setupPowerSchool(config) {
   }
 
   if (config.app.verbose) {
-    console.log(log.ok(`- PowerSchool Access Token: ${ps_auth}`));
+    console.log(log.ok(`- PowerSchool Access Token: ${psAuth}`));
   }
 
   // Now with our token, it's time to get the powerschool staff data
@@ -198,10 +198,10 @@ async function setupPowerSchool(config) {
     console.log(log.heading("Retreive Data from PowerSchool"));
   }
 
-  let ps_data = await powerschool.getStaffList(
+  let psData = await powerschool.getStaffList(
     config.schools,
     config.server.url,
-    ps_auth
+    psAuth
   );
 
   console.log(log.ok("- Successfully Collected Data from PowerSchool"));
@@ -210,7 +210,7 @@ async function setupPowerSchool(config) {
   // unless needed.
   fs.writeFileSync(
     `${config.app.cachePath}/ps_data.json`,
-    JSON.stringify(ps_data, null, 2),
+    JSON.stringify(psData, null, 2),
     { encoding: "utf8" }
   );
   console.log(log.ok("- Successfully Cached PowerSchool Data"));

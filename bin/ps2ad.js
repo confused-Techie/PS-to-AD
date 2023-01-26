@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+/*eslint-disable-next-line no-magic-numbers*/
 var argv = require("yargs/yargs")(process.argv.slice(2))
   .usage("Usage: $0 <command> [options]")
   .command(

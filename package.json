@@ -60,7 +60,10 @@
       "no-ternary": 0,
       "max-len": ["error", 110],
       "strict": 0,
-      "sort-keys": 0
+      "sort-keys": 0,
+      "max-lines": 0,
+      "max-lines-per-function": 0,
+      "max-statements": 0
     },
     "globals": {}
   }
