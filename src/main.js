@@ -65,7 +65,7 @@ async function run(args) {
         encoding: "utf8",
       })
     );
-    console.log("`skip_ps` Set! Skiping Powerschool Data Retreival...");
+    console.log(log.info + "`skip_ps` Set! Skiping Powerschool Data Retreival...");
   } else {
     // Now with a known good config, we will firstly setupPowerSchool
     let ps_data_loc = await setupPowerSchool(config);
@@ -82,7 +82,7 @@ async function run(args) {
         encoding: "utf8",
       }
     );
-    console.log("`skip_ad` Set! Skipping Active Directory Data Retreival...");
+    console.log(log.info + "`skip_ad` Set! Skipping Active Directory Data Retreival...");
   } else {
     // And now we need to get the data from Active Directory
     let ad_return = await setupAD(config, args);
@@ -114,6 +114,7 @@ async function run(args) {
     }
   } else {
     // We don't have any initial migrations steps specified. So now we would want to compare
+    console.log(`${log.warning} Compare not yet supported`);
   }
 }
 
