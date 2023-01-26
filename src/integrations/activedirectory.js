@@ -2,7 +2,7 @@
  * @file Exposes the utilities to integrate with Active Directory
  */
 
-const child_process = require("node:child_process");
+const childProcess = require("node:child_process");
 
 /**
  * @function getStaffList
@@ -15,8 +15,8 @@ async function getStaffList(config) {
   return new Promise((resolve, reject) => {
     // We then want to start the user defined script to get the AD users we care about
     try {
-      child_process.execFile(
-        config.ad_scripts.user_list,
+      childProcess.execFile(
+        config.adScripts.userList,
         { shell: "powershell.exe" },
         (error, stdout, stderr) => {
           if (error) {
@@ -37,6 +37,5 @@ async function getStaffList(config) {
 }
 
 module.exports = {
-  checkProcessStatus,
   getStaffList,
 };

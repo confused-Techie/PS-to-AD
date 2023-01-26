@@ -51,15 +51,15 @@ function normalize(args, config) {
     },
     app: {
       verbose: args.verbose ?? config.app?.verbose,
-      skip_ps: args.skip_ps ?? config.app?.skip_ps,
-      skip_ad: args.skip_ad ?? config.app?.skip_ad,
+      skipPS: args.skip_ps ?? config.app?.skip_ps,
+      skipAD: args.skip_ad ?? config.app?.skip_ad,
       initial: args.initial ?? config.app?.initial,
-      cache_path: args.cache_path ?? config.app?.cache_path,
+      cachePath: args.cache_path ?? config.app?.cache_path,
       domain: args.domain ?? config.app?.domain,
       algo: args.algo ?? config.app?.algo,
     },
-    ad_scripts: {
-      user_list: args.ad_script_user_list ?? config?.ad_scripts?.user_list,
+    adScripts: {
+      userList: args.ad_script_user_list ?? config?.ad_scripts?.user_list,
     },
   };
 }

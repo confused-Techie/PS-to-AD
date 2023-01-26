@@ -19,19 +19,19 @@ async function compare(config, args) {
  * Essentially looping through both ways of the PS and AD data to identify
  * automatically whatever is possible, and for what fails to be automatically matched
  * will instead output to a file as needed.
- * @param {object} ps_data - The PowerSchool Data Object as read from disk.
- * @param {object} ad_data - The ActiveDirectory Data Object as read from disk.
+ * @param {object} psData - The PowerSchool Data Object as read from disk.
+ * @param {object} adData - The ActiveDirectory Data Object as read from disk.
  * @param {object} config - The normalized config
  * @returns {object} Will return a `change_table` an object structure of changes
  * waiting to take effect.
  */
-async function initial(ps_data, ad_data, config) {
+async function initial(psData, adData, config) {
   // This function is used during the initial migration.
   // Needs to be able to dynamically check the data for any potential matches.
 
   let METHOD = null; // fill with default
 
-  let change_table = []; // The variable to collect the change status information
+  let changeTable = []; // The variable to collect the change status information
   let goodMatch = 0;
   let badMatch = 0; // testing vars
 
@@ -46,8 +46,8 @@ async function initial(ps_data, ad_data, config) {
       // The default or recursive Method will be the simpliest
       // but possibly the longest. Sorting linearly through the data
 
-      for (let schoolIdx = 0; schoolIdx < ps_data.length; schoolIdx++) {
-        let school = ps_data[schoolIdx];
+      for (let schoolIdx = 0; schoolIdx < psData.length; schoolIdx++) {
+        let school = psData[schoolIdx];
         for (
           let usrIdx = 0;
           usrIdx < school.details.staffs.staff.length;
@@ -80,14 +80,14 @@ async function initial(ps_data, ad_data, config) {
           }
 
           let nameMatch = await adFindByFirstLast(
-            ad_data,
+            adData,
             user?.name?.first_name,
             user?.name?.last_name
           );
 
           if (nameMatch === null) {
             badMatch++;
-            change_table.push(
+            changeTable.push(
               `Not Found: ${user?.name?.first_name}, ${user?.name?.last_name}`
             );
           } else {
@@ -99,7 +99,7 @@ async function initial(ps_data, ad_data, config) {
   console.log(
     `Successful Matches: ${goodMatch} -- Unsuccessful Matches: ${badMatch}`
   );
-  return change_table;
+  return changeTable;
 }
 
 /**
@@ -113,13 +113,13 @@ async function initial(ps_data, ad_data, config) {
  * @returns {object|null} Returns either the properly indexed location for the entry
  * within the provided ad_data or will return `null`
  */
-async function adFindByFirstLast(ad_data, first, last) {
-  for (let i = 0; i < ad_data.length; i++) {
+async function adFindByFirstLast(adData, first, last) {
+  for (let i = 0; i < adData.length; i++) {
     if (
-      ad_data[i]["GivenName"].toLowerCase() === first.toLowerCase() &&
-      ad_data[i]["Surname"].toLowerCase() === last.toLowerCase()
+      adData[i]["GivenName"].toLowerCase() === first.toLowerCase() &&
+      adData[i]["Surname"].toLowerCase() === last.toLowerCase()
     ) {
-      return ad_data[i];
+      return adData[i];
     }
   }
   return null;

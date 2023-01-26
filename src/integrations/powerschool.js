@@ -4,7 +4,7 @@
 
 const axios = require("axios");
 
-async function getStaffList(schoolArray, url, access_token) {
+async function getStaffList(schoolArray, url, accessToken) {
   let districtArray = [];
 
   for await (const school of schoolArray) {
@@ -17,7 +17,7 @@ async function getStaffList(schoolArray, url, access_token) {
         method: "get",
         url: `${url}/ws/v1/school/${school.id}/staff/count`,
         headers: {
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${accessToken}`,
           Accept: "application/json",
         },
       });
@@ -30,7 +30,7 @@ async function getStaffList(schoolArray, url, access_token) {
         method: "get",
         url: `${url}/ws/v1/school/${school.id}/staff?expansions=emails,addresses,phones,school_affiliations&extensions=u_dyn_schoolstaff_1,u_schoolstaffuserfields`,
         headers: {
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${accessToken}`,
           Accept: "application/json",
         },
       });
@@ -54,7 +54,7 @@ async function powerschoolCreds(id, secret, url) {
   const urlencoded = new URLSearchParams();
   urlencoded.append("grant_type", "client_credentials");
 
-  let access_token = undefined;
+  let accessToken = undefined;
 
   try {
     let resp = await axios.post(`${url}/oauth/access_token`, urlencoded, {
@@ -64,7 +64,7 @@ async function powerschoolCreds(id, secret, url) {
       },
     });
 
-    access_token = resp.data.access_token;
+    accessToken = resp.data.access_token;
     // TODO: Rebuild these safety nets properly to ensure they still work.
     //access_token = resp?.data?.access_token;
 
@@ -73,12 +73,12 @@ async function powerschoolCreds(id, secret, url) {
     //  access_token = undefined;
     //}
 
-    return access_token;
+    return accessToken;
   } catch (err) {
     throw err;
   }
 
-  return access_token;
+  return accessToken;
 }
 
 module.exports = {
