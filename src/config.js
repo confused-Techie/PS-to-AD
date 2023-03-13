@@ -5,6 +5,7 @@
 
 const fs = require("fs");
 const yaml = require("js-yaml");
+const log = require("log-utils");
 
 /**
  * @function getConfig
@@ -54,17 +55,47 @@ function normalize(args, config) {
       skipPS: args.skip_ps ?? config.app?.skip_ps,
       skipAD: args.skip_ad ?? config.app?.skip_ad,
       initial: args.initial ?? config.app?.initial,
-      cachePath: args.cache_path ?? config.app?.cache_path,
+      cachePath: args.cache_path ?? config.app?.cache_path ?? undefined,
       domain: args.domain ?? config.app?.domain,
       algo: args.algo ?? config.app?.algo,
     },
     adScripts: {
       userList: args.ad_script_user_list ?? config?.ad_scripts?.user_list,
+      sendAlert: "./scripts/sendAlert.ps1"
     },
   };
+}
+
+/**
+ * @function setup
+ * @desc Handles the initial configuration setup. To where the main module
+ * should only have to provide a configuration here and not worry about the rest
+ * of the configuration validation.
+ * @param {object} args - The arguments from the CLI.
+ */
+async function setup(args) {
+
+  // We will want to import out Config File.
+  let config = await getConfig(args.config);
+
+  // Then afterwards we want to normalize the data between our CLI ARGS and Config File
+  config = await normalize(args, config);
+
+  config = config ?? false;
+
+  if (!config) {
+
+    console.log(`${log.error} - Retreiving the configuration returned 'null'. Check your path again.`);
+    throw new Error("Unable to Parse Configuration");
+    process.exit(100);
+
+  }
+
+  return config;
 }
 
 module.exports = {
   getConfig,
   normalize,
+  setup,
 };
