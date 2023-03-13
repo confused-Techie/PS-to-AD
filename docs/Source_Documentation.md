@@ -9,15 +9,16 @@
 passed user config and will combine them into a single configuration.
 Always prioritizing CLI parameters over Config File</p>
 </dd>
+<dt><a href="#setup">setup(args)</a></dt>
+<dd><p>Handles the initial configuration setup. To where the main module
+should only have to provide a configuration here and not worry about the rest
+of the configuration validation.</p>
+</dd>
 <dt><a href="#run">run(args)</a> ⇒ <code>TBD</code></dt>
 <dd><p>Like described in the top level module definition, this function is the
 main handler to kick off the application lifetime.</p>
 </dd>
-<dt><a href="#setupPowerSchool">setupPowerSchool(config)</a> ⇒ <code>string</code></dt>
-<dd><p>This function is in charge of retreiving and saving up to date information
-from PowerSchool. Which once done will be saved to the configured <code>cache</code></p>
-</dd>
-<dt><a href="#setupAD">setupAD()</a> ⇒</dt>
+<dt><a href="#handleActivedDirectoryData">handleActivedDirectoryData()</a> ⇒</dt>
 <dd><p>A redirect and chained promise around functions exposed from
 <code>activedirectory</code> to access get AD Data saved to disk.
 On success the return is empty, otherwise throws error.</p>
@@ -35,6 +36,13 @@ will instead output to a file as needed.</p>
 <dt><a href="#adFindByFirstLast">adFindByFirstLast(ad_data, first, last)</a> ⇒ <code>object</code> | <code>null</code></dt>
 <dd><p>Takes an Active Directory Data Object and iterates through it
 until it is able to find a proper match to the first and last name provided.</p>
+</dd>
+<dt><a href="#managePowerSchoolData">managePowerSchoolData()</a></dt>
+<dd><p>Used to abstract away powerschool configurations and interactions from the main module</p>
+</dd>
+<dt><a href="#handlePowerSchoolData">handlePowerSchoolData(config)</a> ⇒ <code>string</code></dt>
+<dd><p>This function is in charge of retreiving and saving up the date information
+from PowerSchool. Which once done will be saved to the configured <code>cache</code></p>
 </dd>
 </dl>
 
@@ -64,6 +72,19 @@ Always prioritizing CLI parameters over Config File
 | args | <code>object</code> | The arguments from the CLI. |
 | config | <code>object</code> | The configuration from the file system. |
 
+<a name="setup"></a>
+
+## setup(args)
+Handles the initial configuration setup. To where the main module
+should only have to provide a configuration here and not worry about the rest
+of the configuration validation.
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| args | <code>object</code> | The arguments from the CLI. |
+
 <a name="run"></a>
 
 ## run(args) ⇒ <code>TBD</code>
@@ -77,22 +98,9 @@ main handler to kick off the application lifetime.
 | --- | --- | --- |
 | args | <code>object</code> | The Arguments to pass to the entire application. Valid key value pairs described further in documentation. |
 
-<a name="setupPowerSchool"></a>
+<a name="handleActivedDirectoryData"></a>
 
-## setupPowerSchool(config) ⇒ <code>string</code>
-This function is in charge of retreiving and saving up to date information
-from PowerSchool. Which once done will be saved to the configured `cache`
-
-**Kind**: global function  
-**Returns**: <code>string</code> - - A Path the where the data has been written from PowerSchool.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| config | <code>object</code> | The configuration previously provided by `run()` with the same structured data. |
-
-<a name="setupAD"></a>
-
-## setupAD() ⇒
+## handleActivedDirectoryData() ⇒
 A redirect and chained promise around functions exposed from
 `activedirectory` to access get AD Data saved to disk.
 On success the return is empty, otherwise throws error.
@@ -141,4 +149,23 @@ within the provided ad_data or will return `null`
 | ad_data | <code>object</code> | The ActiveDirectory Object as Read from Disk. |
 | first | <code>string</code> | The First name to match |
 | last | <code>string</code> | The Last Name to Match |
+
+<a name="managePowerSchoolData"></a>
+
+## managePowerSchoolData()
+Used to abstract away powerschool configurations and interactions from the main module
+
+**Kind**: global function  
+<a name="handlePowerSchoolData"></a>
+
+## handlePowerSchoolData(config) ⇒ <code>string</code>
+This function is in charge of retreiving and saving up the date information
+from PowerSchool. Which once done will be saved to the configured `cache`
+
+**Kind**: global function  
+**Returns**: <code>string</code> - - A Path to where the data has been written from PowerSchool.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| config | <code>object</code> | = The configuration previously provided by `run()` with the same strucuted data. |
 

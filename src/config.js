@@ -61,7 +61,7 @@ function normalize(args, config) {
     },
     adScripts: {
       userList: args.ad_script_user_list ?? config?.ad_scripts?.user_list,
-      sendAlert: "./scripts/sendAlert.ps1"
+      sendAlert: "./scripts/sendAlert.ps1",
     },
   };
 }
@@ -74,7 +74,6 @@ function normalize(args, config) {
  * @param {object} args - The arguments from the CLI.
  */
 async function setup(args) {
-
   // We will want to import out Config File.
   let config = await getConfig(args.config);
 
@@ -84,11 +83,11 @@ async function setup(args) {
   config = config ?? false;
 
   if (!config) {
-
-    console.log(`${log.error} - Retreiving the configuration returned 'null'. Check your path again.`);
+    console.log(
+      `${log.error} - Retreiving the configuration returned 'null'. Check your path again.`
+    );
     throw new Error("Unable to Parse Configuration");
     process.exit(100);
-
   }
 
   return config;

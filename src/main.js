@@ -71,7 +71,6 @@ async function run(args) {
         JSON.stringify(adWithDCID, null, 2),
         { encoding: "utf8" }
       );
-
     }
   } else {
     // We don't have any initial migrations steps specified. So now we

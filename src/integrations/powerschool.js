@@ -11,18 +11,18 @@ const log = require("log-utils");
  * @desc Used to abstract away powerschool configurations and interactions from the main module
  */
 async function managePowerSchoolData(config) {
-
   if (config.app.skipPS) {
     // We are skipping external calls, get cached data
 
     let data = JSON.parse(
-      fs.readFileSync(`${config.app.cachePath}/ps_data.json`, { encoding: "utf8" })
+      fs.readFileSync(`${config.app.cachePath}/ps_data.json`, {
+        encoding: "utf8",
+      })
     );
 
     console.log("`skipPS` Set! Skipping Powerschool data retreival...");
 
     return data;
-
   } else {
     // We are in fact getting remote powerschool data
 
@@ -30,9 +30,7 @@ async function managePowerSchoolData(config) {
 
     // handlePowerSchoolData returns the location of the data on disk.
 
-    let data = JSON.parse(
-      fs.readFileSync(psDataLoc, { encoding: "utf8" })
-    );
+    let data = JSON.parse(fs.readFileSync(psDataLoc, { encoding: "utf8" }));
 
     console.log("Successfully retreived powerschool data.");
 
@@ -111,11 +109,7 @@ async function handlePowerSchoolData(config) {
     console.log(log.heading("Retreive Data from PowerSchool"));
   }
 
-  let psData = await getStaffList(
-    config.schools,
-    config.server.url,
-    psAuth
-  );
+  let psData = await getStaffList(config.schools, config.server.url, psAuth);
 
   console.log(log.ok("- Successfully Collected Data from PowerSchool"));
 

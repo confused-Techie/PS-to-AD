@@ -7,15 +7,17 @@ const log = require("log-utils");
 const fs = require("fs");
 
 async function manageActiveDirectoryData(config) {
-
   if (config.app.skipAD) {
-
     // Retreive data from cache
     let data = JSON.parse(
-      fs.readFileSync(`${config.app.cachePath}/ad_data.json`, { encoding: "utf8" })
+      fs.readFileSync(`${config.app.cachePath}/ad_data.json`, {
+        encoding: "utf8",
+      })
     );
 
-    console.log(log.info + "`skipAD` Set! Skipping Active Directory Data Retreival...");
+    console.log(
+      log.info + "`skipAD` Set! Skipping Active Directory Data Retreival..."
+    );
 
     return data;
   } else {
@@ -25,7 +27,9 @@ async function manageActiveDirectoryData(config) {
     await handleActivedDirectoryData(config);
 
     let data = JSON.parse(
-      fs.readFileSync(`${config.app.cachePath}/ad_data.json`, { encoding: "utf8" })
+      fs.readFileSync(`${config.app.cachePath}/ad_data.json`, {
+        encoding: "utf8",
+      })
     );
 
     return data;
@@ -46,10 +50,11 @@ async function handleActivedDirectoryData(config) {
 
   await testExecutionPolicy()
     .then(async (res) => {
-
       await getStaffList(config)
         .then((resAD) => {
-          console.log(log.ok(`Active Directory Script has run, returns: ${resAD}`));
+          console.log(
+            log.ok(`Active Directory Script has run, returns: ${resAD}`)
+          );
           return;
         })
         .catch((err) => {
@@ -66,23 +71,25 @@ async function handleActivedDirectoryData(config) {
 async function testExecutionPolicy() {
   return new Promise((resolve, reject) => {
     try {
-      childProcess.exec("Get-ExecutionPolicy",
+      childProcess.exec(
+        "Get-ExecutionPolicy",
         { shell: "powershell.exe" },
         (error, stdout, stderr) => {
-        if (error) {
-          throw error;
-          process.exit(1);
-        }
+          if (error) {
+            throw error;
+            process.exit(1);
+          }
 
-        if (stdout == "Restricted\n" || stdout === "Undefined\n") {
-          throw `Windows Execution Policy set to: ${stdout}. Scripts may not be able to run. https:/go.microsoft.com/fwlink/?LinkID=135170`
-          process.exit(100);
-        } else {
-          console.log("Resolve");
-          resolve(stdout);
+          if (stdout == "Restricted\n" || stdout === "Undefined\n") {
+            throw `Windows Execution Policy set to: ${stdout}. Scripts may not be able to run. https:/go.microsoft.com/fwlink/?LinkID=135170`;
+            process.exit(100);
+          } else {
+            console.log("Resolve");
+            resolve(stdout);
+          }
         }
-      });
-    } catch(err) {
+      );
+    } catch (err) {
       throw err;
       process.exit(1);
     }
