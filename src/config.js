@@ -54,15 +54,21 @@ function normalize(args, config) {
       verbose: args.verbose ?? config.app?.verbose,
       skipPS: args.skip_ps ?? config.app?.skip_ps,
       skipAD: args.skip_ad ?? config.app?.skip_ad,
-      initial: args.initial ?? config.app?.initial,
       cachePath: args.cache_path ?? config.app?.cache_path ?? undefined,
       domain: args.domain ?? config.app?.domain,
-      algo: args.algo ?? config.app?.algo,
+      sendEmail: args.sendEmail ?? config.app?.sendEmail,
+      attribute: args.attribute ?? config.app?.attribute,
     },
     adScripts: {
       userList: args.ad_script_user_list ?? config?.ad_scripts?.user_list,
-      sendAlert: "./scripts/sendAlert.ps1",
     },
+    email: {
+      to: args.email_to ?? config.email?.to,
+      from: args.email_from ?? config.email?.from,
+      host: args.email_host ?? config.email?.host,
+      port: args.email_port ?? config.email?.port,
+      pass: args.email_pass ?? config.email?.pass,
+    }
   };
 }
 

@@ -6,11 +6,13 @@
 
 const fs = require("fs");
 const log = require("log-utils");
+const v8 = require("v8");
 
 const activedirectory = require("./integrations/activedirectory.js");
 const compare = require("./integrations/compare.js");
 const configuration = require("./config.js");
 const powerschool = require("./integrations/powerschool.js");
+const mail = require("./integrations/mail.js");
 
 const DEFAULT_CACHE_PATH = "./.cache/";
 
@@ -46,7 +48,14 @@ async function run(args) {
   }
 
   if (config.app.verbose) {
-    console.log(config);
+    const structuredClone = (obj) => {
+      return v8.deserialize(v8.serialize(obj));
+    };
+
+    let printConfig = structuredClone(config);
+    printConfig.email.pass = "****";
+    printConfig.server.secret = "****";
+    console.log(printConfig);
   }
 
   let psData = await powerschool.managePowerSchoolData(config);
@@ -58,25 +67,29 @@ async function run(args) {
   // items, whereas additional runs afterwards will not have to do the
   // same thing.
 
-  if (config.app.initial) {
-    // With this option then from here we would need to do the
-    // initial migration steps
-    let adWithDCID = await compare.initial(psData, adData, config);
+  let adWithDCID = await compare.compare(psData, adData, config);
 
-    if (config.app.verbose) {
-      console.log(log.ok("Initial Migrate Done"));
-      //console.log(ad_with_dcid);
-      fs.writeFileSync(
-        `${config.app.cachePath}/tmp_migrate_data.json`,
-        JSON.stringify(adWithDCID, null, 2),
-        { encoding: "utf8" }
-      );
-    }
-  } else {
-    // We don't have any initial migrations steps specified. So now we
-    // would want to compare
-    console.log(`${log.warning} Compare not yet supported`);
+  if (config.app.verbose) {
+    console.log(log.ok("Compare Done"));
   }
+
+  fs.writeFileSync(
+    `${config.app.cachePath}/tmp_migrate_data.json`,
+    JSON.stringify(adWithDCID, null, 2),
+    { encoding: "utf8" }
+  );
+
+  if (config.app.sendEmail) {
+    // Then send an email
+    let sentSuccess = await mail.send(JSON.stringify(adWithDCID, null, 2));
+
+    if (sentSuccess) {
+      console.log(log.ok("Sent Email Successfull"));
+    } else {
+      console.log(`${log.warning} - Failed to send email`);
+    }
+  }
+
 }
 
 module.exports = {
