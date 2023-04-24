@@ -57,3 +57,13 @@ This Project uses [JSDoc](https://jsdoc.app/index.html) within Code to keep docu
 Since this program will interact with active directory you're able to set the attribute you'd like the program to use by setting `app.attribute` within the config.
 
 This value can be anything, but will be used for placing DCID id's, as well as should be used when setting `ps2ad:no-sync` to ignore an item within ad during sync.
+
+## Usage
+
+To get setup with `PS2AD` just use the following steps:
+
+1) Copy this repository locally.
+2) Within the root folder of the repository run `npm install` to install all needed dependencies 
+3) Afterwards create your script to retreive a list of all Active Directory users. This can be placed wherever you'd like, and be whatever you'd like. But an example script is in `./example_scripts/`. Ensure the output file is written to `.cache/ad_data.json`
+4) Create your `conf.yml` which will contain all configuration data for the application. Within you can point to your scripts, and to the cache folder and anything else needed. You can use the example config above
+5) Finally run the application while pointing to your file configuration. If you'd like to install globally to be able to run it as a bin just use `npm install . -g`
