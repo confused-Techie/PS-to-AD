@@ -54,7 +54,6 @@ This Project uses [JSDoc](https://jsdoc.app/index.html) within Code to keep docu
 
 ## Active Directory Effects
 
-Additionally this project makes the current naive assumtions about Active Directory:
+Since this program will interact with active directory you're able to set the attribute you'd like the program to use by setting `app.attribute` within the config.
 
-* `extensionAttribute1` Is used to store the DCID of Users in PowerSchool
-* `extensionAttribute1` Is used to exclude an AD object from sync. Which to exclude from sync simply define: `ps2ad:no-sync` within that attribute. The alternative of using a DCID there.
+This value can be anything, but will be used for placing DCID id's, as well as should be used when setting `ps2ad:no-sync` to ignore an item within ad during sync.
