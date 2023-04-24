@@ -116,8 +116,6 @@ async function getStaffList(config) {
             process.exit(1);
           }
 
-          console.log(`stdout: ${stdout}`);
-          console.log(`stderr: ${stderr}`);
           resolve("Success");
         }
       );

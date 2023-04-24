@@ -151,6 +151,15 @@ async function adFindByFirstLast(adData, first, last) {
   return null;
 }
 
+/**
+  * @async
+  * @function adFindByAttribute
+  * @desc Uses the configured attribute to search for match to the passed data field.
+  * @param {object} adData - the active directory data passed.
+  * @param {string} ext - The value of the field we are matching against.
+  * @param {object} config - The configuration
+  * @return {object|null} AN object if the user is found, null otherwise
+  */
 async function adFindByAttribute(adData, ext, config) {
   for (let i = 0; i < adData.length; i++) {
     if (adData[i][config.app.attribute] === ext) {
