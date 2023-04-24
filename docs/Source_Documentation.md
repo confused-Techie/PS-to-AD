@@ -34,6 +34,9 @@ the powershell command based on the configuration&#39;s script.</p>
 <dd><p>Takes an Active Directory Data Object and iterates through it
 until it is able to find a proper match to the first and last name provided.</p>
 </dd>
+<dt><a href="#adFindByAttribute">adFindByAttribute(adData, ext, config)</a> ⇒ <code>object</code> | <code>null</code></dt>
+<dd><p>Uses the configured attribute to search for match to the passed data field.</p>
+</dd>
 <dt><a href="#managePowerSchoolData">managePowerSchoolData()</a></dt>
 <dd><p>Used to abstract away powerschool configurations and interactions from the main module</p>
 </dd>
@@ -143,6 +146,20 @@ within the provided ad_data or will return `null`
 | ad_data | <code>object</code> | The ActiveDirectory Object as Read from Disk. |
 | first | <code>string</code> | The First name to match |
 | last | <code>string</code> | The Last Name to Match |
+
+<a name="adFindByAttribute"></a>
+
+## adFindByAttribute(adData, ext, config) ⇒ <code>object</code> \| <code>null</code>
+Uses the configured attribute to search for match to the passed data field.
+
+**Kind**: global function  
+**Returns**: <code>object</code> \| <code>null</code> - AN object if the user is found, null otherwise  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| adData | <code>object</code> | the active directory data passed. |
+| ext | <code>string</code> | The value of the field we are matching against. |
+| config | <code>object</code> | The configuration |
 
 <a name="managePowerSchoolData"></a>
 
