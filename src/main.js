@@ -81,7 +81,10 @@ async function run(args) {
 
   if (config.app.sendEmail) {
     // Then send an email
-    let sentSuccess = await mail.send(JSON.stringify(adWithDCID, null, 2), config);
+    let sentSuccess = await mail.send(
+      JSON.stringify(adWithDCID, null, 2),
+      config
+    );
 
     if (sentSuccess) {
       console.log(log.ok("Sent Email Successfull"));
