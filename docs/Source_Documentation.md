@@ -27,11 +27,8 @@ On success the return is empty, otherwise throws error.</p>
 <dd><p>A function wrapping a promise that resolves after successfully running
 the powershell command based on the configuration&#39;s script.</p>
 </dd>
-<dt><a href="#initial">initial(psData, adData, config)</a> ⇒ <code>object</code></dt>
-<dd><p>This function is used during the initial migration only.
-Essentially looping through both ways of the PS and AD data to identify
-automatically whatever is possible, and for what fails to be automatically matched
-will instead output to a file as needed.</p>
+<dt><a href="#compare">compare(psData, adData, config)</a> ⇒ <code>object</code></dt>
+<dd><p>Compares data between both data sources to transform them as needed.</p>
 </dd>
 <dt><a href="#adFindByFirstLast">adFindByFirstLast(ad_data, first, last)</a> ⇒ <code>object</code> | <code>null</code></dt>
 <dd><p>Takes an Active Directory Data Object and iterates through it
@@ -116,13 +113,10 @@ the powershell command based on the configuration's script.
 
 **Kind**: global function  
 **Returns**: <code>string</code> - - ' Success'  
-<a name="initial"></a>
+<a name="compare"></a>
 
-## initial(psData, adData, config) ⇒ <code>object</code>
-This function is used during the initial migration only.
-Essentially looping through both ways of the PS and AD data to identify
-automatically whatever is possible, and for what fails to be automatically matched
-will instead output to a file as needed.
+## compare(psData, adData, config) ⇒ <code>object</code>
+Compares data between both data sources to transform them as needed.
 
 **Kind**: global function  
 **Returns**: <code>object</code> - Will return a `change_table` an object structure of changes

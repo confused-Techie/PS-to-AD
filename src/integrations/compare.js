@@ -2,16 +2,16 @@
  * @file This contains the functions used for comparison and matching.
  */
 
- /**
-  * @function compare
-  * @async
-  * @desc Compares data between both data sources to transform them as needed.
-  * @param {object} psData - The PowerSchool Data Object as read from disk.
-  * @param {object} adData - The ActiveDirectory Data Object as read from disk.
-  * @param {object} config - The normalized config
-  * @returns {object} Will return a `change_table` an object structure of changes
-  * waiting to take effect.
-  */
+/**
+ * @function compare
+ * @async
+ * @desc Compares data between both data sources to transform them as needed.
+ * @param {object} psData - The PowerSchool Data Object as read from disk.
+ * @param {object} adData - The ActiveDirectory Data Object as read from disk.
+ * @param {object} config - The normalized config
+ * @returns {object} Will return a `change_table` an object structure of changes
+ * waiting to take effect.
+ */
 async function compare(psData, adData, config) {
   // The comparison function here needs to take the saved cached files of AD Data
   // and PS Data, and find the items that match up between them.
@@ -33,7 +33,11 @@ async function compare(psData, adData, config) {
   for (let schoolIdx = 0; schoolIdx < psData.length; schoolIdx++) {
     let school = psData[schoolIdx];
 
-    for (let usrIdx = 0; usrIdx < school.details.staffs.staff.length; usrIdx++) {
+    for (
+      let usrIdx = 0;
+      usrIdx < school.details.staffs.staff.length;
+      usrIdx++
+    ) {
       let user = school.details.staffs.staff[usrIdx];
 
       // Now that we have our user data, and school data, we need to find
@@ -52,7 +56,11 @@ async function compare(psData, adData, config) {
       }
 
       // Our DCID didn't match, so lets check by name
-      let nameMatch = await adFindByFirstLast(adData, user?.name?.first_name, user?.name?.last_name);
+      let nameMatch = await adFindByFirstLast(
+        adData,
+        user?.name?.first_name,
+        user?.name?.last_name
+      );
 
       if (nameMatch !== null) {
         goodMatch++;
@@ -68,48 +76,55 @@ async function compare(psData, adData, config) {
       changeTable.push(
         `Not Found: (PowerSchool -> Active Directory) ${user?.name?.first_name}, ${user?.name?.last_name}; DCID: ${user?.users_dcid}; Teacher Number: ${user?.local_id}`
       );
-
     }
   }
 
-  console.log(`Successful Matches: ${goodMatch} -- Unsuccessful Matches: ${badMatch} -- Total AD Unmatched: ${adData.length - goodMatch}`);
+  console.log(
+    `Successful Matches: ${goodMatch} -- Unsuccessful Matches: ${badMatch} -- Total AD Unmatched: ${
+      adData.length - goodMatch
+    }`
+  );
 
   // Now that we have properly matched all users in powerschool, we still have to consider AD users.
   // But since powerschool is the master copy this will have to be done differently.
-   for (let usrIdx = 0; usrIdx < adData.length; usrIdx++) {
-     let user = adData[usrIdx];
+  for (let usrIdx = 0; usrIdx < adData.length; usrIdx++) {
+    let user = adData[usrIdx];
 
-     // First lets check if we have a defined extension to indicate we don't touch this item
-     if (typeof user[config.app.attribute] === "string" && user[config.app.attribute] === "ps2ad:no-sync") {
-       goodMatch++;
-       changeTable.push(
-         `Ignore: No Sync set on: ${user?.SamAccountName}`
-       );
-       continue;
-     }
+    // First lets check if we have a defined extension to indicate we don't touch this item
+    if (
+      typeof user[config.app.attribute] === "string" &&
+      user[config.app.attribute] === "ps2ad:no-sync"
+    ) {
+      goodMatch++;
+      changeTable.push(`Ignore: No Sync set on: ${user?.SamAccountName}`);
+      continue;
+    }
 
-     if (foundSAMs.includes(user?.SamAccountName)) {
-       // This item is already accounted for within the earlier PowerSchool checks.
-       // So we really don't need to do anything here at all, unless maybe log to
-       // ensure this is known. But for now, just continue
-       continue;
-     }
+    if (foundSAMs.includes(user?.SamAccountName)) {
+      // This item is already accounted for within the earlier PowerSchool checks.
+      // So we really don't need to do anything here at all, unless maybe log to
+      // ensure this is known. But for now, just continue
+      continue;
+    }
 
-     if (!user?.Enabled) {
-       // The User has been disabled via AD, and can be ignored for now.
-       continue;
-     }
+    if (!user?.Enabled) {
+      // The User has been disabled via AD, and can be ignored for now.
+      continue;
+    }
 
-     // Which since PowerSchool is the master copy, in the future the resulting
-     // items here may be up for deletion. For now though lets log nicely
-     badMatch++;
-     changeTable.push(
-       `Not Found: (Active Directory -> PowerSchool) ${user?.GivenName}, ${user?.Surname}; ${user?.SamAccountName}`
-     );
+    // Which since PowerSchool is the master copy, in the future the resulting
+    // items here may be up for deletion. For now though lets log nicely
+    badMatch++;
+    changeTable.push(
+      `Not Found: (Active Directory -> PowerSchool) ${user?.GivenName}, ${user?.Surname}; ${user?.SamAccountName}`
+    );
+  }
 
-   }
-
-   console.log(`Successful Matches: ${goodMatch} -- Unsuccessful Matches: ${badMatch} -- Unhandled AD Items: ${adData.length - (goodMatch + badMatch)}`);
+  console.log(
+    `Successful Matches: ${goodMatch} -- Unsuccessful Matches: ${badMatch} -- Unhandled AD Items: ${
+      adData.length - (goodMatch + badMatch)
+    }`
+  );
   return changeTable;
 }
 
@@ -144,7 +159,6 @@ async function adFindByAttribute(adData, ext, config) {
   }
   return null;
 }
-
 
 module.exports = {
   compare,

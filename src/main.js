@@ -89,7 +89,6 @@ async function run(args) {
       console.log(`${log.warning} - Failed to send email`);
     }
   }
-
 }
 
 module.exports = {

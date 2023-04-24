@@ -68,7 +68,7 @@ function normalize(args, config) {
       host: args.email_host ?? config.email?.host,
       port: args.email_port ?? config.email?.port,
       pass: args.email_pass ?? config.email?.pass,
-    }
+    },
   };
 }
 
