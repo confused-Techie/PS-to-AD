@@ -15,13 +15,13 @@ async function send(content, config) {
 
     let info = await transporter.sendMail({
       from: config.email.from,
-      to: config.app.toEmail,
+      to: config.email.to,
       subject: "PS-2-AD",
       text: content,
     });
 
     console.log(`Email Message Sent: ${info.messageId}`);
-    console.log(`Preview URL: ${nodemailer.getTestMessageUrl}`);
+    console.log(`Preview URL: ${nodemailer.getTestMessageUrl()}`);
 
     return true;
   } catch (err) {
