@@ -1,0 +1,39 @@
+schools:
+  - id: 0
+    name: "Elementary School"
+  - id: 1
+    name: "Junior High School"
+  - id: 2
+    name: "High School"
+server:
+  id: "POWER_SCHOOL_SERVER_PLUGIN ID"
+  secret: "POWER_SCHOOL_SERVER_PLUGIN Secret"
+  url: "Power School URL"
+app:
+  verbose: true
+  # Skip powerschool remote data collection. Use local cache
+  skip_ps: false
+  # Skip active directory remote data collection. Use local cache
+  skip_ad: false
+  # The path to store all cache files, and output files
+  cache_path: "Absolute or Relative Path"
+  # Optional Domain
+  domain: ""
+  # Whether or not the server should send an email once done running.
+  sendEmail: true
+  # The attribute PS2AD will use within AD
+  attribute: "extensionAttribute1"
+ad_scripts:
+  # Path to the script that can create the user data file
+  user_list: "Absolute or Relative path to your script"
+email:
+  # The email address to send to
+  to: ""
+  # The email address to send from
+  from: ""
+  # Host of the email server
+  host: ""
+  # Port of your email service
+  port: 25
+  # Password to the email we are sending from
+  pass: ""

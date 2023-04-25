@@ -4,7 +4,7 @@
   "description": "PS-to-AD Can be used to help sync data between your PowerSchool Instance and Active Directory",
   "main": "./src/main.js",
   "bin": {
-    "ps-to-ad": "bin/ps2ad.js"
+    "ps2ad": "bin/ps2ad.js"
   },
   "engines": {
     "node": "^16.15.0",

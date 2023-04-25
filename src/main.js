@@ -9,12 +9,12 @@ const log = require("log-utils");
 const v8 = require("v8");
 const joi = require("joi");
 
-const activedirectory = require("./integrations/activedirectory.js");
-const compare = require("./integrations/compare.js");
 const configuration = require("./config.js");
-const powerschool = require("./integrations/powerschool.js");
-const mail = require("./integrations/mail.js");
 const validate = require("./validate.js");
+const activedirectory = require("./integrations/activedirectory.js");
+const powerschool = require("./integrations/powerschool.js");
+const compare = require("./integrations/compare.js");
+const mail = require("./integrations/mail.js");
 
 const DEFAULT_CACHE_PATH = "./.cache/";
 
