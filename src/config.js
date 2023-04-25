@@ -58,6 +58,8 @@ function normalize(args, config) {
       domain: args.domain ?? config.app?.domain,
       sendEmail: args.sendEmail ?? config.app?.sendEmail,
       attribute: args.attribute ?? config.app?.attribute,
+      outputMatched: args.outputMatched ?? config.app?.outputMatched,
+      outputIgnored: args.outputIgnored ?? config.app?.outputIgnored, 
     },
     adScripts: {
       userList: args.ad_script_user_list ?? config?.ad_scripts?.user_list,

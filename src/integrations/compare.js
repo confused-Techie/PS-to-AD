@@ -48,9 +48,11 @@ async function compare(psData, adData, config) {
 
       if (extMatch !== null) {
         goodMatch++;
-        changeTable.push(
-          `DCID Matched: ${user?.users_dcid} to ${extMatch?.SamAccountName}; User OK!`
-        );
+        if (config.app.outputMatched) {
+          changeTable.push(
+            `DCID Matched: ${user?.users_dcid} to ${extMatch?.SamAccountName}; User OK!`
+          );
+        }
         foundSAMs.push(extMatch.SamAccountName);
         continue;
       }
@@ -96,7 +98,9 @@ async function compare(psData, adData, config) {
       user[config.app.attribute] === "ps2ad:no-sync"
     ) {
       goodMatch++;
-      changeTable.push(`Ignore: No Sync set on: ${user?.SamAccountName}`);
+      if (config.app.outputIgnored) {
+        changeTable.push(`Ignore: No Sync set on: ${user?.SamAccountName}`);
+      }
       continue;
     }
 
@@ -162,7 +166,9 @@ async function adFindByFirstLast(adData, first, last) {
  */
 async function adFindByAttribute(adData, ext, config) {
   for (let i = 0; i < adData.length; i++) {
-    if (adData[i][config.app.attribute] === ext) {
+    let attrib = parseInt(adData[i][config.app.attribute]);
+
+    if (attrib === ext) {
       return adData[i];
     }
   }

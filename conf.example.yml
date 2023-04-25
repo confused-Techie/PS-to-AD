@@ -23,6 +23,8 @@ app:
   sendEmail: true
   # The attribute PS2AD will use within AD
   attribute: "extensionAttribute1"
+  outputMatched: true
+  outputIgnored: true
 ad_scripts:
   # Path to the script that can create the user data file
   user_list: "Absolute or Relative path to your script"

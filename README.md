@@ -40,6 +40,8 @@ The configuration options for PS2AD. All options are available via the configura
     * **domain:** The email domain.
     * **sendEmail:** Whether or not to send an email with the results of the run.
     * **attribute:** The name of the attribute in Active Directory to use for PS2AD.
+    * **outputMatched:** Boolean if you'd like to output to the change table when a user has been matched successfully and requires no action.
+    * **outputIgnored:** Boolean if you'd like to output the ignored objects from Active Directory
 * **ad_scripts:** The following settings for Active Directory scripts:
     * **user_list:** The path to the script that will output a list of users to the cache directory.
 * **email:** The following settings for email:
