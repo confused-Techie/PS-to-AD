@@ -72,7 +72,7 @@ async function run(args) {
     let validAD = await validate.active_directory.validateAsync(adData);
 
     console.log(log.ok("Validated data formats returned"));
-  } catch(err) {
+  } catch (err) {
     console.error("Data returned is an unexpected format!");
     console.error(err);
     console.error("Cannot safely modify data!");
@@ -92,7 +92,9 @@ async function run(args) {
 
   let date = new Date();
   fs.writeFileSync(
-    `${config.app.cachePath}/change_table_${date.getDay()}.${date.getMonth()}.${date.getFullYear()}.json`,
+    `${
+      config.app.cachePath
+    }/change_table_${date.getDay()}.${date.getMonth()}.${date.getFullYear()}.json`,
     JSON.stringify(adWithDCID, null, 2),
     { encoding: "utf8" }
   );
