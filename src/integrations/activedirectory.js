@@ -84,7 +84,7 @@ async function testExecutionPolicy() {
             throw `Windows Execution Policy set to: ${stdout}. Scripts may not be able to run. https:/go.microsoft.com/fwlink/?LinkID=135170`;
             process.exit(100);
           } else {
-            console.log("Resolve");
+            console.log("Execution Policy set correctly");
             resolve(stdout);
           }
         }

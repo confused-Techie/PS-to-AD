@@ -7,12 +7,14 @@
 const fs = require("fs");
 const log = require("log-utils");
 const v8 = require("v8");
+const joi = require("joi");
 
 const activedirectory = require("./integrations/activedirectory.js");
 const compare = require("./integrations/compare.js");
 const configuration = require("./config.js");
 const powerschool = require("./integrations/powerschool.js");
 const mail = require("./integrations/mail.js");
+const validate = require("./validate.js");
 
 const DEFAULT_CACHE_PATH = "./.cache/";
 
@@ -62,6 +64,21 @@ async function run(args) {
 
   let adData = await activedirectory.manageActiveDirectoryData(config);
 
+  console.log(log.ok("Gather data from PowerSchool & Active Directory"));
+
+  try {
+    let validPS = await validate.powerschool.validateAsync(psData);
+
+    let validAD = await validate.active_directory.validateAsync(adData);
+
+    console.log(log.ok("Validated data formats returned"));
+  } catch(err) {
+    console.error("Data returned is an unexpected format!");
+    console.error(err);
+    console.error("Cannot safely modify data!");
+    process.exit(100);
+  }
+
   /// Now we have collected our two chunks of data.
   // But the first time run will actually need to do the initial matching of
   // items, whereas additional runs afterwards will not have to do the
@@ -73,8 +90,9 @@ async function run(args) {
     console.log(log.ok("Compare Done"));
   }
 
+  let date = new Date();
   fs.writeFileSync(
-    `${config.app.cachePath}/tmp_migrate_data.json`,
+    `${config.app.cachePath}/change_table_${date.getDay()}.${date.getMonth()}.${date.getFullYear()}.json`,
     JSON.stringify(adWithDCID, null, 2),
     { encoding: "utf8" }
   );
