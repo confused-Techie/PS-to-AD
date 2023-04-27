@@ -44,7 +44,11 @@ async function compare(psData, adData, config) {
       // what most closely matches this user within AD
       // As well as properly handling if the DCID is already available.
 
-      let extMatch = await adFindByAttribute(adData, user?.users_dcid, config.app.attribute);
+      let extMatch = await adFindByAttribute(
+        adData,
+        user?.users_dcid,
+        config.app.attribute
+      );
 
       if (extMatch !== null) {
         goodMatch++;
@@ -58,7 +62,11 @@ async function compare(psData, adData, config) {
       }
 
       // Then lets check in case the employeeID contains the right dcid
-      let manExtMatch = await adFindByAttribute(adData, user?.users_dcid, "EmployeeID");
+      let manExtMatch = await adFindByAttribute(
+        adData,
+        user?.users_dcid,
+        "EmployeeID"
+      );
 
       if (manExtMatch !== null) {
         goodMatch++;
