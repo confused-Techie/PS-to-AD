@@ -44,7 +44,7 @@ async function compare(psData, adData, config) {
       // what most closely matches this user within AD
       // As well as properly handling if the DCID is already available.
 
-      let extMatch = await adFindByAttribute(adData, user?.users_dcid, config);
+      let extMatch = await adFindByAttribute(adData, user?.users_dcid, config.app.attribute);
 
       if (extMatch !== null) {
         goodMatch++;
@@ -54,6 +54,20 @@ async function compare(psData, adData, config) {
           );
         }
         foundSAMs.push(extMatch.SamAccountName);
+        continue;
+      }
+
+      // Then lets check in case the employeeID contains the right dcid
+      let manExtMatch = await adFindByAttribute(adData, user?.users_dcid, "EmployeeID");
+
+      if (manExtMatch !== null) {
+        goodMatch++;
+        if (config.app.outputMatched) {
+          changeTable.push(
+            `DCID Matched (employeeID): ${users?.users_dcid} to ${manExtMatch?.SamAccountName}; User OK!`
+          );
+        }
+        foundSAMs.push(manExtMatch.SamAccountName);
         continue;
       }
 
@@ -164,9 +178,9 @@ async function adFindByFirstLast(adData, first, last) {
  * @param {object} config - The configuration
  * @return {object|null} AN object if the user is found, null otherwise
  */
-async function adFindByAttribute(adData, ext, config) {
+async function adFindByAttribute(adData, ext, attr) {
   for (let i = 0; i < adData.length; i++) {
-    let attrib = parseInt(adData[i][config.app.attribute]);
+    let attrib = parseInt(adData[i][attr]);
 
     if (attrib === ext) {
       return adData[i];
