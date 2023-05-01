@@ -1,6 +1,7 @@
 /**
  * @file This contains the functions used for comparison and matching.
  */
+const activedirectory = require("./activedirectory.js");
 
 /**
  * @function compare
@@ -25,20 +26,75 @@ async function compare(psData, adData, config) {
 
   let changeTable = []; // The variable to collect the change status information
   let foundSAMs = []; // Used to help speed up ad check
-  let goodMatch = 0;
-  let badMatch = 0;
+  let excludeList = []; // Used to have a safety ignore system
 
+  let successMatchesPS = 0;
+  let successMatchesSecondaryPS = 0;
+  let nameMatchPS = 0;
+  let addedDCIDPS = 0;
+  let failedPS = 0;
+
+  let noSyncAD = 0;
+  let disabledUserAD = 0;
+  let failedAD = 0;
+
+  // Due to the rare possibility of a user having an identical first and last name in
+  // Powerschool we will firstly do a check for this happening, then ensure to ignore
+  // then from all future checks and emit a warning
+
+  for (let schoolIdx = 0; schoolIdx < psData.length; schoolIdx++) {
+    let school = psData[schoolIdx];
+
+    for (let usrIdx = 0; usrIdx < school.details.staffs.staff.length; usrIdx++) {
+      let user = school.details.staffs.staff[usrIdx];
+
+      // Now with this user, we need to loop through every single other user
+      // and ensure we don't have any collisions
+
+      for (let schoolColIdx = 0; schoolColIdx < psData.length; schoolColIdx++) {
+        let schoolCol = psData[schoolColIdx];
+
+        for (let usrColIdx = 0; usrColIdx < schoolCol.details.staffs.staff.length; usrColIdx++) {
+          let userCol = schoolCol.details.staffs.staff[usrColIdx];
+
+          if (
+            user.name.first_name === userCol.name.first_name &&
+            user.name.last_name === userCol.name.last_name &&
+            user.users_dcid !== userCol.users_dcid
+          ) {
+            // This checks for an exact name match, while also ensuring the DCID
+            // doesn't match to avoid a false positive on the original item.
+            excludeList.push(user);
+            console.log(`Adding ${user.name.first_name}, ${user.name.last_name} (${user.users_dcid}) to the exclude list`);
+          }
+        }
+      }
+    }
+  }
   // So lets write this as the only method and cross my damn fingers
   // Assuming we remove support for multiple algo options, and only use the 'recursive'
   for (let schoolIdx = 0; schoolIdx < psData.length; schoolIdx++) {
     let school = psData[schoolIdx];
 
+    staffLoop:
     for (
       let usrIdx = 0;
       usrIdx < school.details.staffs.staff.length;
       usrIdx++
     ) {
       let user = school.details.staffs.staff[usrIdx];
+
+      // Lets first double check this user doesn't exist on an exclude list
+      for (let i = 0; i < excludeList.length; i++) {
+        if (
+          user.name.first_name === excludeList[i].name.first_name &&
+          user.name.last_name === excludeList[i].name.last_name &&
+          user.users_dcid === excludeList[i].users_dcid
+        ) {
+          // This item exists on the exclude list and must be excluded.
+          continue staffLoop;
+        }
+      }
 
       // Now that we have our user data, and school data, we need to find
       // what most closely matches this user within AD
@@ -47,7 +103,7 @@ async function compare(psData, adData, config) {
       let extMatch = await adFindByAttribute(adData, user?.users_dcid, config.app.attribute);
 
       if (extMatch !== null) {
-        goodMatch++;
+        successMatchesPS++;
         if (config.app.outputMatched) {
           changeTable.push(
             `DCID Matched: ${user?.users_dcid} to ${extMatch?.SamAccountName}; User OK!`
@@ -57,18 +113,20 @@ async function compare(psData, adData, config) {
         continue;
       }
 
-      // Then lets check in case the employeeID contains the right dcid
-      let manExtMatch = await adFindByAttribute(adData, user?.users_dcid, "EmployeeID");
+      if (config.app?.checkEmployeeID) {
+        // Then lets check in case the employeeID contains the right dcid
+        let manExtMatch = await adFindByAttribute(adData, user?.users_dcid, "EmployeeID");
 
-      if (manExtMatch !== null) {
-        goodMatch++;
-        if (config.app.outputMatched) {
-          changeTable.push(
-            `DCID Matched (employeeID): ${users?.users_dcid} to ${manExtMatch?.SamAccountName}; User OK!`
-          );
+        if (manExtMatch !== null) {
+          successMatchesSecondaryPS++;
+          if (config.app.outputMatched) {
+            changeTable.push(
+              `DCID Matched (employeeID): ${users?.users_dcid} to ${manExtMatch?.SamAccountName}; User OK!`
+            );
+          }
+          foundSAMs.push(manExtMatch.SamAccountName);
+          continue;
         }
-        foundSAMs.push(manExtMatch.SamAccountName);
-        continue;
       }
 
       // Our DCID didn't match, so lets check by name
@@ -79,27 +137,39 @@ async function compare(psData, adData, config) {
       );
 
       if (nameMatch !== null) {
-        goodMatch++;
-        changeTable.push(
-          `Add DCID: ${user?.users_dcid} to ${nameMatch.SamAccountName}`
-        );
-        foundSAMs.push(nameMatch.SamAccountName);
-        continue;
+        if (config.app.noWrite) {
+          nameMatchPS++;
+          changeTable.push(
+            `Add DCID: ${user?.users_dcid} to ${nameMatch.SamAccountName}`
+          );
+          foundSAMs.push(nameMatch.SamAccountName);
+          continue;
+        } else {
+          // We should write our changes
+          let ret = await activedirectory.addAttribToUser(nameMatch.SamAccountName, user.users_dcid, config);
+          nameMatchPS++;
+          addedDCIDPS++;
+          changeTable.push(
+            `Successfully Added- DCID: ${user.users_dcid} to ${nameMatch.SamAccountName}`
+          );
+          foundSAMs.push(nameMatch.SamAccountName);
+        }
+
       }
 
       // We couldn't find the user by DCID or by name. We could keep trying, but for now lets mark error
-      badMatch++;
+      failedPS++;
       changeTable.push(
         `Not Found: (PowerSchool -> Active Directory) ${user?.name?.first_name}, ${user?.name?.last_name}; DCID: ${user?.users_dcid}; Teacher Number: ${user?.local_id}`
       );
     }
   }
 
-  console.log(
-    `Successful Matches: ${goodMatch} -- Unsuccessful Matches: ${badMatch} -- Total AD Unmatched: ${
-      adData.length - goodMatch
-    }`
-  );
+  //console.log(
+  //  `Successful Matches: ${goodMatch} -- Unsuccessful Matches: ${badMatch} -- Total AD Unmatched: ${
+  //    adData.length - goodMatch
+  //  }`
+  //);
 
   // Now that we have properly matched all users in powerschool, we still have to consider AD users.
   // But since powerschool is the master copy this will have to be done differently.
@@ -111,7 +181,7 @@ async function compare(psData, adData, config) {
       typeof user[config.app.attribute] === "string" &&
       user[config.app.attribute] === "ps2ad:no-sync"
     ) {
-      goodMatch++;
+      noSyncAD++;
       if (config.app.outputIgnored) {
         changeTable.push(`Ignore: No Sync set on: ${user?.SamAccountName}`);
       }
@@ -127,21 +197,28 @@ async function compare(psData, adData, config) {
 
     if (!user?.Enabled) {
       // The User has been disabled via AD, and can be ignored for now.
+      disabledUserAD++;
       continue;
     }
 
     // Which since PowerSchool is the master copy, in the future the resulting
     // items here may be up for deletion. For now though lets log nicely
-    badMatch++;
+    failedAD++;
     changeTable.push(
       `Not Found: (Active Directory -> PowerSchool) ${user?.GivenName}, ${user?.Surname}; ${user?.SamAccountName}`
     );
   }
 
+  console.log(`Exclude List Table Length: ${excludeList.length}`);
   console.log(
-    `Successful Matches: ${goodMatch} -- Unsuccessful Matches: ${badMatch} -- Unhandled AD Items: ${
-      adData.length - (goodMatch + badMatch)
-    }`
+    "PowerSchool Stats:"
+  );
+  console.log(
+    `DCID Already Present: ${successMatchesPS} - DCID in EmployeeID: ${successMatchesSecondaryPS} - Name Successfully Matched: ${nameMatchPS} - Added DCID: ${addedDCIDPS} - No Match: ${failedPS}`
+  );
+  console.log("Active Directory Stats:");
+  console.log(
+    `NoSync Set: ${noSyncAD} - Disabled Account: ${disabledUserAD} - Failed to Match: ${failedAD}`
   );
   return changeTable;
 }

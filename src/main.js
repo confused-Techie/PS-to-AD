@@ -57,6 +57,7 @@ async function run(args) {
     let printConfig = structuredClone(config);
     printConfig.email.pass = "****";
     printConfig.server.secret = "****";
+    printConfig.editUser.password = "****";
     console.log(printConfig);
   }
 

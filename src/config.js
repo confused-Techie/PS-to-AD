@@ -54,15 +54,22 @@ function normalize(args, config) {
       verbose: args.verbose ?? config.app?.verbose,
       skipPS: args.skip_ps ?? config.app?.skip_ps,
       skipAD: args.skip_ad ?? config.app?.skip_ad,
+      noWrite: args.no_write ?? config.app?.no_write,
       cachePath: args.cache_path ?? config.app?.cache_path ?? undefined,
       domain: args.domain ?? config.app?.domain,
       sendEmail: args.sendEmail ?? config.app?.sendEmail,
       attribute: args.attribute ?? config.app?.attribute,
       outputMatched: args.outputMatched ?? config.app?.outputMatched,
       outputIgnored: args.outputIgnored ?? config.app?.outputIgnored,
+      checkEmployeeID: args.checkEmployeeID ?? config.app?.checkEmployeeID,
+    },
+    editUser: {
+      username: args.editUser_username ?? config?.editUser?.username,
+      password: args.editUser_password ?? config?.editUser?.password,
     },
     adScripts: {
       userList: args.ad_script_user_list ?? config?.ad_scripts?.user_list,
+      editUser: args.ad_script_edit_user ?? config?.ad_scripts?.edit_user
     },
     email: {
       to: args.email_to ?? config.email?.to,
