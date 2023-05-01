@@ -27,6 +27,10 @@ On success the return is empty, otherwise throws error.</p>
 <dd><p>A function wrapping a promise that resolves after successfully running
 the powershell command based on the configuration&#39;s script.</p>
 </dd>
+<dt><a href="#addAttribToUser">addAttribToUser(user, attrib, config)</a> ⇒ <code>string</code></dt>
+<dd><p>A function wrapping a promise that resolves after successfully running
+the powershell command based on the configuration&#39;s script.</p>
+</dd>
 <dt><a href="#compare">compare(psData, adData, config)</a> ⇒ <code>object</code></dt>
 <dd><p>Compares data between both data sources to transform them as needed.</p>
 </dd>
@@ -116,6 +120,21 @@ the powershell command based on the configuration's script.
 
 **Kind**: global function  
 **Returns**: <code>string</code> - - ' Success'  
+<a name="addAttribToUser"></a>
+
+## addAttribToUser(user, attrib, config) ⇒ <code>string</code>
+A function wrapping a promise that resolves after successfully running
+the powershell command based on the configuration's script.
+
+**Kind**: global function  
+**Returns**: <code>string</code> - - 'Success'  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| user | <code>string</code> | The user to modify |
+| attrib | <code>string</code> | The Attribute to add to the user |
+| config | <code>object</code> | The global configuration object |
+
 <a name="compare"></a>
 
 ## compare(psData, adData, config) ⇒ <code>object</code>

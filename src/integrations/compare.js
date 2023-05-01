@@ -45,7 +45,11 @@ async function compare(psData, adData, config) {
   for (let schoolIdx = 0; schoolIdx < psData.length; schoolIdx++) {
     let school = psData[schoolIdx];
 
-    for (let usrIdx = 0; usrIdx < school.details.staffs.staff.length; usrIdx++) {
+    for (
+      let usrIdx = 0;
+      usrIdx < school.details.staffs.staff.length;
+      usrIdx++
+    ) {
       let user = school.details.staffs.staff[usrIdx];
 
       // Now with this user, we need to loop through every single other user
@@ -54,7 +58,11 @@ async function compare(psData, adData, config) {
       for (let schoolColIdx = 0; schoolColIdx < psData.length; schoolColIdx++) {
         let schoolCol = psData[schoolColIdx];
 
-        for (let usrColIdx = 0; usrColIdx < schoolCol.details.staffs.staff.length; usrColIdx++) {
+        for (
+          let usrColIdx = 0;
+          usrColIdx < schoolCol.details.staffs.staff.length;
+          usrColIdx++
+        ) {
           let userCol = schoolCol.details.staffs.staff[usrColIdx];
 
           if (
@@ -65,7 +73,9 @@ async function compare(psData, adData, config) {
             // This checks for an exact name match, while also ensuring the DCID
             // doesn't match to avoid a false positive on the original item.
             excludeList.push(user);
-            console.log(`Adding ${user.name.first_name}, ${user.name.last_name} (${user.users_dcid}) to the exclude list`);
+            console.log(
+              `Adding ${user.name.first_name}, ${user.name.last_name} (${user.users_dcid}) to the exclude list`
+            );
           }
         }
       }
@@ -76,8 +86,7 @@ async function compare(psData, adData, config) {
   for (let schoolIdx = 0; schoolIdx < psData.length; schoolIdx++) {
     let school = psData[schoolIdx];
 
-    staffLoop:
-    for (
+    staffLoop: for (
       let usrIdx = 0;
       usrIdx < school.details.staffs.staff.length;
       usrIdx++
@@ -119,7 +128,11 @@ async function compare(psData, adData, config) {
 
       if (config.app?.checkEmployeeID) {
         // Then lets check in case the employeeID contains the right dcid
-        let manExtMatch = await adFindByAttribute(adData, user?.users_dcid, "EmployeeID");
+        let manExtMatch = await adFindByAttribute(
+          adData,
+          user?.users_dcid,
+          "EmployeeID"
+        );
 
         if (manExtMatch !== null) {
           successMatchesSecondaryPS++;
@@ -150,7 +163,11 @@ async function compare(psData, adData, config) {
           continue;
         } else {
           // We should write our changes
-          let ret = await activedirectory.addAttribToUser(nameMatch.SamAccountName, user.users_dcid, config);
+          let ret = await activedirectory.addAttribToUser(
+            nameMatch.SamAccountName,
+            user.users_dcid,
+            config
+          );
           nameMatchPS++;
           addedDCIDPS++;
           changeTable.push(
@@ -158,7 +175,6 @@ async function compare(psData, adData, config) {
           );
           foundSAMs.push(nameMatch.SamAccountName);
         }
-
       }
 
       // We couldn't find the user by DCID or by name. We could keep trying, but for now lets mark error
@@ -214,9 +230,7 @@ async function compare(psData, adData, config) {
   }
 
   console.log(`Exclude List Table Length: ${excludeList.length}`);
-  console.log(
-    "PowerSchool Stats:"
-  );
+  console.log("PowerSchool Stats:");
   console.log(
     `DCID Already Present: ${successMatchesPS} - DCID in EmployeeID: ${successMatchesSecondaryPS} - Name Successfully Matched: ${nameMatchPS} - Added DCID: ${addedDCIDPS} - No Match: ${failedPS}`
   );

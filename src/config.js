@@ -69,7 +69,7 @@ function normalize(args, config) {
     },
     adScripts: {
       userList: args.ad_script_user_list ?? config?.ad_scripts?.user_list,
-      editUser: args.ad_script_edit_user ?? config?.ad_scripts?.edit_user
+      editUser: args.ad_script_edit_user ?? config?.ad_scripts?.edit_user,
     },
     email: {
       to: args.email_to ?? config.email?.to,

@@ -127,22 +127,31 @@ async function getStaffList(config) {
 }
 
 /**
-  * @function addAttribToUser
-  * @async
-  * @desc A function wrapping a promise that resolves after successfully running
-  * the powershell command based on the configuration's script.
-  * @param {string} user - The user to modify
-  * @param {string} attrib - The Attribute to add to the user
-  * @param {object} config - The global configuration object
-  * @returns {string} - 'Success'
-  */
+ * @function addAttribToUser
+ * @async
+ * @desc A function wrapping a promise that resolves after successfully running
+ * the powershell command based on the configuration's script.
+ * @param {string} user - The user to modify
+ * @param {string} attrib - The Attribute to add to the user
+ * @param {object} config - The global configuration object
+ * @returns {string} - 'Success'
+ */
 async function addAttribToUser(user, attrib, config) {
   return new Promise((resolve, reject) => {
     try {
       // We are wrapping each string in quotes in case they contain non-CLI safe characters
       childProcess.execFile(
         config.adScripts.editUser,
-        [ "-user", `"${user}"`, "-attrib", `"${attrib}"`, "-credUser", `"${config.editUser.username}"`, "-credPass", `"${config.editUser.password}"` ],
+        [
+          "-user",
+          `"${user}"`,
+          "-attrib",
+          `"${attrib}"`,
+          "-credUser",
+          `"${config.editUser.username}"`,
+          "-credPass",
+          `"${config.editUser.password}"`,
+        ],
         { shell: "powershell.exe" },
         (error, stdout, stderr) => {
           if (error) {
@@ -153,7 +162,7 @@ async function addAttribToUser(user, attrib, config) {
           resolve("Success");
         }
       );
-    } catch(err) {
+    } catch (err) {
       throw err;
       process.exit(1);
     }
