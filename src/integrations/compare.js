@@ -105,6 +105,11 @@ async function compare(psData, adData, config) {
         }
       }
 
+      if (typeof user?.local_id === "string" && user.local_id.startsWith("SVC-")) {
+        // Ignore Service Accounts
+        continue;
+      }
+
       // Now that we have our user data, and school data, we need to find
       // what most closely matches this user within AD
       // As well as properly handling if the DCID is already available.
@@ -185,12 +190,6 @@ async function compare(psData, adData, config) {
     }
   }
 
-  //console.log(
-  //  `Successful Matches: ${goodMatch} -- Unsuccessful Matches: ${badMatch} -- Total AD Unmatched: ${
-  //    adData.length - goodMatch
-  //  }`
-  //);
-
   // Now that we have properly matched all users in powerschool, we still have to consider AD users.
   // But since powerschool is the master copy this will have to be done differently.
   for (let usrIdx = 0; usrIdx < adData.length; usrIdx++) {
@@ -221,11 +220,20 @@ async function compare(psData, adData, config) {
       continue;
     }
 
+    // Check if the user has the custom group membership
+    if (Array.isArray(user.MemberOf) && user.MemberOf.includes(config.app.group)) {
+      noSyncAD++;
+      if (config.app.outputIgnored) {
+        changeTable.push(`Ignore: Group Membership set on: ${user?.SamAccountName}`);
+      }
+      continue;
+    }
+
     // Which since PowerSchool is the master copy, in the future the resulting
     // items here may be up for deletion. For now though lets log nicely
     failedAD++;
     changeTable.push(
-      `Not Found: (Active Directory -> PowerSchool) ${user?.GivenName}, ${user?.Surname}; ${user?.SamAccountName}`
+      `Not Found: (Active Directory -> PowerSchool) ${user?.GivenName}, ${user?.Surname}; ${user?.SamAccountName}; last Logon Timestamp: ${user?.lastLogon}`
     );
   }
 

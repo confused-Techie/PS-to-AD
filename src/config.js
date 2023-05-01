@@ -59,6 +59,7 @@ function normalize(args, config) {
       domain: args.domain ?? config.app?.domain,
       sendEmail: args.sendEmail ?? config.app?.sendEmail,
       attribute: args.attribute ?? config.app?.attribute,
+      group: args.group ?? config.app?.group,
       outputMatched: args.outputMatched ?? config.app?.outputMatched,
       outputIgnored: args.outputIgnored ?? config.app?.outputIgnored,
       checkEmployeeID: args.checkEmployeeID ?? config.app?.checkEmployeeID,
@@ -77,6 +78,7 @@ function normalize(args, config) {
       host: args.email_host ?? config.email?.host,
       port: args.email_port ?? config.email?.port,
       pass: args.email_pass ?? config.email?.pass,
+      auth: args.email_auth ?? config.email?.auth,
     },
   };
 }

@@ -2,14 +2,25 @@ const nodemailer = require("nodemailer");
 
 async function send(content, config) {
   try {
-    let configOptions = {
-      host: config.email.host,
-      port: config.email.port,
-      auth: {
-        user: config.email.from,
-        pass: config.email.pass,
-      },
-    };
+    let configOptions;
+
+    if (config.email.auth) {
+      configOptions = {
+        host: config.email.host,
+        port: config.email.port,
+        secure: true,
+        auth: {
+          user: config.email.from,
+          pass: config.email.pass
+        }
+      };
+
+    } else {
+      configOptions = {
+        host: config.email.host,
+        port: config.email.port,
+      };
+    }
 
     let transporter = nodemailer.createTransport(configOptions);
 
