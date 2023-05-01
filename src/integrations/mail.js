@@ -11,10 +11,9 @@ async function send(content, config) {
         secure: true,
         auth: {
           user: config.email.from,
-          pass: config.email.pass
-        }
+          pass: config.email.pass,
+        },
       };
-
     } else {
       configOptions = {
         host: config.email.host,

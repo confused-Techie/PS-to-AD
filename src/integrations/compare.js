@@ -105,7 +105,10 @@ async function compare(psData, adData, config) {
         }
       }
 
-      if (typeof user?.local_id === "string" && user.local_id.startsWith("SVC-")) {
+      if (
+        typeof user?.local_id === "string" &&
+        user.local_id.startsWith("SVC-")
+      ) {
         // Ignore Service Accounts
         continue;
       }
@@ -221,10 +224,15 @@ async function compare(psData, adData, config) {
     }
 
     // Check if the user has the custom group membership
-    if (Array.isArray(user.MemberOf) && user.MemberOf.includes(config.app.group)) {
+    if (
+      Array.isArray(user.MemberOf) &&
+      user.MemberOf.includes(config.app.group)
+    ) {
       noSyncAD++;
       if (config.app.outputIgnored) {
-        changeTable.push(`Ignore: Group Membership set on: ${user?.SamAccountName}`);
+        changeTable.push(
+          `Ignore: Group Membership set on: ${user?.SamAccountName}`
+        );
       }
       continue;
     }
