@@ -2,6 +2,7 @@
  * @file This contains the functions used for comparison and matching.
  */
 const activedirectory = require("./activedirectory.js");
+const rules = require("../compareRules/rules.js");
 
 /**
  * @function compare
@@ -38,49 +39,24 @@ async function compare(psData, adData, config) {
   let disabledUserAD = 0;
   let failedAD = 0;
 
-  // Due to the rare possibility of a user having an identical first and last name in
-  // Powerschool we will firstly do a check for this happening, then ensure to ignore
-  // then from all future checks and emit a warning
+  let state = {
+    psData: psData,
+    adData: adData,
+    changeTable: changeTable,
+    excludeList: excludeList,
+    successMatchesPS: successMatchesPS,
+    successMatchesSecondaryPS: successMatchesSecondaryPS,
+    nameMatchPS: nameMatchPS,
+    addedDCIDPS: addedDCIDPS,
+    failedPS: failedPS,
+    noSyncAD: noSyncAD,
+    disabledUserAD: disabledUserAD,
+    failedAD: failedAD,
+    config: config
+  };
 
-  for (let schoolIdx = 0; schoolIdx < psData.length; schoolIdx++) {
-    let school = psData[schoolIdx];
+  rules.duplicatePSUserCheck(state);
 
-    for (
-      let usrIdx = 0;
-      usrIdx < school.details.staffs.staff.length;
-      usrIdx++
-    ) {
-      let user = school.details.staffs.staff[usrIdx];
-
-      // Now with this user, we need to loop through every single other user
-      // and ensure we don't have any collisions
-
-      for (let schoolColIdx = 0; schoolColIdx < psData.length; schoolColIdx++) {
-        let schoolCol = psData[schoolColIdx];
-
-        for (
-          let usrColIdx = 0;
-          usrColIdx < schoolCol.details.staffs.staff.length;
-          usrColIdx++
-        ) {
-          let userCol = schoolCol.details.staffs.staff[usrColIdx];
-
-          if (
-            user.name.first_name === userCol.name.first_name &&
-            user.name.last_name === userCol.name.last_name &&
-            user.users_dcid !== userCol.users_dcid
-          ) {
-            // This checks for an exact name match, while also ensuring the DCID
-            // doesn't match to avoid a false positive on the original item.
-            excludeList.push(user);
-            console.log(
-              `Adding ${user.name.first_name}, ${user.name.last_name} (${user.users_dcid}) to the exclude list`
-            );
-          }
-        }
-      }
-    }
-  }
   // So lets write this as the only method and cross my damn fingers
   // Assuming we remove support for multiple algo options, and only use the 'recursive'
   for (let schoolIdx = 0; schoolIdx < psData.length; schoolIdx++) {
@@ -93,62 +69,28 @@ async function compare(psData, adData, config) {
     ) {
       let user = school.details.staffs.staff[usrIdx];
 
-      // Lets first double check this user doesn't exist on an exclude list
-      for (let i = 0; i < excludeList.length; i++) {
-        if (
-          user.name.first_name === excludeList[i].name.first_name &&
-          user.name.last_name === excludeList[i].name.last_name &&
-          user.users_dcid === excludeList[i].users_dcid
-        ) {
-          // This item exists on the exclude list and must be excluded.
-          continue staffLoop;
-        }
-      }
+      let exclusionCheckRes = rules.exclusionCheck(user, state);
 
-      if (typeof user?.local_id === "string" && user.local_id.startsWith("SVC-")) {
-        // Ignore Service Accounts
+      if (validRuleReturn(exclusionCheckRes)) {
         continue;
       }
 
-      // Now that we have our user data, and school data, we need to find
-      // what most closely matches this user within AD
-      // As well as properly handling if the DCID is already available.
+      let serviceAccountCheckRes = rules.serviceAccountCheck(user, state);
 
-      let extMatch = await adFindByAttribute(
-        adData,
-        user?.users_dcid,
-        config.app.attribute
-      );
-
-      if (extMatch !== null) {
-        successMatchesPS++;
-        if (config.app.outputMatched) {
-          changeTable.push(
-            `DCID Matched: ${user?.users_dcid} to ${extMatch?.SamAccountName}; User OK!`
-          );
-        }
-        foundSAMs.push(extMatch.SamAccountName);
+      if (validRuleReturn(serviceAccountCheckRes)) {
         continue;
       }
 
-      if (config.app?.checkEmployeeID) {
-        // Then lets check in case the employeeID contains the right dcid
-        let manExtMatch = await adFindByAttribute(
-          adData,
-          user?.users_dcid,
-          "EmployeeID"
-        );
+      let dcidMatchRes = rules.dcidMatch(user, state);
 
-        if (manExtMatch !== null) {
-          successMatchesSecondaryPS++;
-          if (config.app.outputMatched) {
-            changeTable.push(
-              `DCID Matched (employeeID): ${users?.users_dcid} to ${manExtMatch?.SamAccountName}; User OK!`
-            );
-          }
-          foundSAMs.push(manExtMatch.SamAccountName);
-          continue;
-        }
+      if (validRuleReturn(dcidMatchRes)) {
+        continue;
+      }
+
+      let dcidMatchEmployeeIDRes = rules.dcidMatchEmployeeID(user, state);
+
+      if (validRuleReturn(dcidMatchEmployeeIDRes)) {
+        continue;
       }
 
       // Our DCID didn't match, so lets check by name
@@ -195,37 +137,27 @@ async function compare(psData, adData, config) {
   for (let usrIdx = 0; usrIdx < adData.length; usrIdx++) {
     let user = adData[usrIdx];
 
-    // First lets check if we have a defined extension to indicate we don't touch this item
-    if (
-      typeof user[config.app.attribute] === "string" &&
-      user[config.app.attribute] === "ps2ad:no-sync"
-    ) {
-      noSyncAD++;
-      if (config.app.outputIgnored) {
-        changeTable.push(`Ignore: No Sync set on: ${user?.SamAccountName}`);
-      }
+    let noSync = rules.noSync(user, state);
+
+    if (validRuleReturn(noSync)) {
       continue;
     }
 
-    if (foundSAMs.includes(user?.SamAccountName)) {
-      // This item is already accounted for within the earlier PowerSchool checks.
-      // So we really don't need to do anything here at all, unless maybe log to
-      // ensure this is known. But for now, just continue
+    let foundSAMsCheck = rules.foundSAMsCheck(user, state);
+
+    if (validRuleReturn(foundSAMsCheck)) {
       continue;
     }
 
-    if (!user?.Enabled) {
-      // The User has been disabled via AD, and can be ignored for now.
-      disabledUserAD++;
+    let disabledCheck = rules.disabledCheck(user, state);
+
+    if (validRuleReturn(disabledCheck)) {
       continue;
     }
 
-    // Check if the user has the custom group membership
-    if (Array.isArray(user.MemberOf) && user.MemberOf.includes(config.app.group)) {
-      noSyncAD++;
-      if (config.app.outputIgnored) {
-        changeTable.push(`Ignore: Group Membership set on: ${user?.SamAccountName}`);
-      }
+    let ignoreGroupCheck = rules.ignoreGroupCheck(user, state);
+
+    if (validRuleReturn(ignoreGroupCheck)) {
       continue;
     }
 
@@ -249,6 +181,14 @@ async function compare(psData, adData, config) {
   return changeTable;
 }
 
+
+function validRuleReturn(val) {
+  if (typeof val === "boolean" && val) {
+    return true;
+  } else {
+    return false;
+  }
+}
 /**
  * @async
  * @function adFindByFirstLast
