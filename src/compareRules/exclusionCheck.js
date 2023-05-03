@@ -1,4 +1,4 @@
-function exclusionCheck(user, state) {
+async function exclusionCheck(user, state) {
   let shouldContinue = false;
 
   // Lets check if the user doesn't exist on an exclude list

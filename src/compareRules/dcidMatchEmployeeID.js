@@ -1,6 +1,6 @@
-const helper = require("./helper.js");
+const helper = require("./helpers.js");
 
-function dcidMatchEmployeeID(user, state) {
+async function dcidMatchEmployeeID(user, state) {
 
   if (state.config.app?.checkEmployeeID) {
 

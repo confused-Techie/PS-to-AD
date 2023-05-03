@@ -6,8 +6,6 @@ function ignoreGroupCheck(user, state) {
       state.changeTable.push(`Ignore: Group Membership set on: ${user?.SamAccountName}`);
     }
     return true;
-  } else {
-    return false;
   }
 }
 

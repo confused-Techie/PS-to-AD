@@ -1,6 +1,6 @@
-const helper = require("./helper.js");
+const helper = require("./helpers.js");
 
-function dcidMatch(user, state) {
+async function dcidMatch(user, state) {
   // Now that we have our user data, and school data, we need to find
   // what most closely matches this user within AD
   // As well as properly handling if the DCID is already available.

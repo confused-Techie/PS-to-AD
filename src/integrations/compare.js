@@ -25,34 +25,21 @@ async function compare(psData, adData, config) {
 
   // But actually we will only use this, since there is no need of the multi-pass system.
 
-  let changeTable = []; // The variable to collect the change status information
-  let foundSAMs = []; // Used to help speed up ad check
-  let excludeList = []; // Used to have a safety ignore system
-
-  let successMatchesPS = 0;
-  let successMatchesSecondaryPS = 0;
-  let nameMatchPS = 0;
-  let addedDCIDPS = 0;
-  let failedPS = 0;
-
-  let noSyncAD = 0;
-  let disabledUserAD = 0;
-  let failedAD = 0;
-
   let state = {
     psData: psData,
     adData: adData,
-    changeTable: changeTable,
-    excludeList: excludeList,
-    successMatchesPS: successMatchesPS,
-    successMatchesSecondaryPS: successMatchesSecondaryPS,
-    nameMatchPS: nameMatchPS,
-    addedDCIDPS: addedDCIDPS,
-    failedPS: failedPS,
-    noSyncAD: noSyncAD,
-    disabledUserAD: disabledUserAD,
-    failedAD: failedAD,
-    config: config
+    config: config,
+    changeTable: [], // The variable to collect the change status information
+    excludeList: [], // Used to have a safety ignore system
+    foundSAMs: [], // Used to help speed up ad check
+    successMatchesPS: 0,
+    successMatchesSecondaryPS: 0,
+    nameMatchPS: 0,
+    addedDCIDPS: 0,
+    failedPS: 0,
+    noSyncAD: 0,
+    disabledUserAD: 0,
+    failedAD: 0
   };
 
   rules.duplicatePSUserCheck(state);
@@ -69,7 +56,7 @@ async function compare(psData, adData, config) {
     ) {
       let user = school.details.staffs.staff[usrIdx];
 
-      let exclusionCheckRes = rules.exclusionCheck(user, state);
+      let exclusionCheckRes = await rules.exclusionCheck(user, state);
 
       if (validRuleReturn(exclusionCheckRes)) {
         continue;
@@ -81,52 +68,27 @@ async function compare(psData, adData, config) {
         continue;
       }
 
-      let dcidMatchRes = rules.dcidMatch(user, state);
+      let dcidMatchRes = await rules.dcidMatch(user, state);
 
       if (validRuleReturn(dcidMatchRes)) {
         continue;
       }
 
-      let dcidMatchEmployeeIDRes = rules.dcidMatchEmployeeID(user, state);
+      let dcidMatchEmployeeIDRes = await rules.dcidMatchEmployeeID(user, state);
 
       if (validRuleReturn(dcidMatchEmployeeIDRes)) {
         continue;
       }
 
-      // Our DCID didn't match, so lets check by name
-      let nameMatch = await adFindByFirstLast(
-        adData,
-        user?.name?.first_name,
-        user?.name?.last_name
-      );
+      let nameMatchCheck = await rules.nameMatchCheck(user, state);
 
-      if (nameMatch !== null) {
-        if (config.app.noWrite) {
-          nameMatchPS++;
-          changeTable.push(
-            `Add DCID: ${user?.users_dcid} to ${nameMatch.SamAccountName}`
-          );
-          foundSAMs.push(nameMatch.SamAccountName);
-          continue;
-        } else {
-          // We should write our changes
-          let ret = await activedirectory.addAttribToUser(
-            nameMatch.SamAccountName,
-            user.users_dcid,
-            config
-          );
-          nameMatchPS++;
-          addedDCIDPS++;
-          changeTable.push(
-            `Successfully Added- DCID: ${user.users_dcid} to ${nameMatch.SamAccountName}`
-          );
-          foundSAMs.push(nameMatch.SamAccountName);
-        }
+      if (validRuleReturn(nameMatchCheck)) {
+        continue;
       }
 
       // We couldn't find the user by DCID or by name. We could keep trying, but for now lets mark error
-      failedPS++;
-      changeTable.push(
+      state.failedPS++;
+      state.changeTable.push(
         `Not Found: (PowerSchool -> Active Directory) ${user?.name?.first_name}, ${user?.name?.last_name}; DCID: ${user?.users_dcid}; Teacher Number: ${user?.local_id}`
       );
     }
@@ -163,22 +125,22 @@ async function compare(psData, adData, config) {
 
     // Which since PowerSchool is the master copy, in the future the resulting
     // items here may be up for deletion. For now though lets log nicely
-    failedAD++;
-    changeTable.push(
+    state.failedAD++;
+    state.changeTable.push(
       `Not Found: (Active Directory -> PowerSchool) ${user?.GivenName}, ${user?.Surname}; ${user?.SamAccountName}; last Logon Timestamp: ${user?.lastLogon}`
     );
   }
 
-  console.log(`Exclude List Table Length: ${excludeList.length}`);
+  console.log(`Exclude List Table Length: ${state.excludeList.length}`);
   console.log("PowerSchool Stats:");
   console.log(
-    `DCID Already Present: ${successMatchesPS} - DCID in EmployeeID: ${successMatchesSecondaryPS} - Name Successfully Matched: ${nameMatchPS} - Added DCID: ${addedDCIDPS} - No Match: ${failedPS}`
+    `DCID Already Present: ${state.successMatchesPS} - DCID in EmployeeID: ${state.successMatchesSecondaryPS} - Name Successfully Matched: ${state.nameMatchPS} - Added DCID: ${state.addedDCIDPS} - No Match: ${state.failedPS}`
   );
   console.log("Active Directory Stats:");
   console.log(
-    `NoSync Set: ${noSyncAD} - Disabled Account: ${disabledUserAD} - Failed to Match: ${failedAD}`
+    `NoSync Set: ${state.noSyncAD} - Disabled Account: ${state.disabledUserAD} - Failed to Match: ${state.failedAD}`
   );
-  return changeTable;
+  return state.changeTable;
 }
 
 
@@ -188,48 +150,6 @@ function validRuleReturn(val) {
   } else {
     return false;
   }
-}
-/**
- * @async
- * @function adFindByFirstLast
- * @desc Takes an Active Directory Data Object and iterates through it
- * until it is able to find a proper match to the first and last name provided.
- * @param {object} ad_data - The ActiveDirectory Object as Read from Disk.
- * @param {string} first - The First name to match
- * @param {string} last - The Last Name to Match
- * @returns {object|null} Returns either the properly indexed location for the entry
- * within the provided ad_data or will return `null`
- */
-async function adFindByFirstLast(adData, first, last) {
-  for (let i = 0; i < adData.length; i++) {
-    if (
-      adData[i]["GivenName"].toLowerCase() === first.toLowerCase() &&
-      adData[i]["Surname"].toLowerCase() === last.toLowerCase()
-    ) {
-      return adData[i];
-    }
-  }
-  return null;
-}
-
-/**
- * @async
- * @function adFindByAttribute
- * @desc Uses the configured attribute to search for match to the passed data field.
- * @param {object} adData - the active directory data passed.
- * @param {string} ext - The value of the field we are matching against.
- * @param {object} config - The configuration
- * @return {object|null} AN object if the user is found, null otherwise
- */
-async function adFindByAttribute(adData, ext, attr) {
-  for (let i = 0; i < adData.length; i++) {
-    let attrib = parseInt(adData[i][attr]);
-
-    if (attrib === ext) {
-      return adData[i];
-    }
-  }
-  return null;
 }
 
 module.exports = {

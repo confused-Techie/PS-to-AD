@@ -9,11 +9,12 @@ module.exports = {
   serviceAccountCheck: require("./serviceAccountCheck.js"),
   dcidMatch: require("./dcidMatch.js"),
   dcidMatchEmployeeID: require("./dcidMatchEmployeeID.js"),
+  nameMatchCheck: require("./nameMatchCheck.js"),
   // AD
-  noSync: require("./noSync.js"),
-  disabledChecK: require("./disabledCheck.js"),
+  noSync: require("./noSyncCheck.js"),
+  disabledCheck: require("./disabledCheck.js"),
   foundSAMsCheck: require("./foundSAMsCheck.js"),
-  ignoreGroupCheck: require("./ignoreGroupCheck.js");
+  ignoreGroupCheck: require("./ignoreGroupCheck.js"),
 };
 
 /**
