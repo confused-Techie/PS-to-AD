@@ -43,7 +43,7 @@ async function compare(psData, adData, config) {
   };
 
   // Loop through initial checks
-  for (let i = 0; i < rules.beforePS.length; i++ ) {
+  for (let i = 0; i < rules.beforePS.length; i++) {
     await rules.beforePS[i][1](state);
   }
 

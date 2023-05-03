@@ -3,26 +3,22 @@
  */
 
 const rules = {
-
-  beforePS: [
-    [ "duplicatePSUserCheck", require("./duplicatePSUserCheck.js") ]
-  ],
+  beforePS: [["duplicatePSUserCheck", require("./duplicatePSUserCheck.js")]],
 
   ps: [
-    [ "exclusionCheck", require("./exclusionCheck.js") ],
-    [ "serviceAccountCheck", require("./serviceAccountCheck.js") ],
-    [ "dcidMatch", require("./dcidMatch.js") ],
-    [ "dcidMatchEmployeeID", require("./dcidMatchEmployeeID.js") ],
-    [ "nameMatchCheck", require("./nameMatchCheck.js") ]
+    ["exclusionCheck", require("./exclusionCheck.js")],
+    ["serviceAccountCheck", require("./serviceAccountCheck.js")],
+    ["dcidMatch", require("./dcidMatch.js")],
+    ["dcidMatchEmployeeID", require("./dcidMatchEmployeeID.js")],
+    ["nameMatchCheck", require("./nameMatchCheck.js")],
   ],
 
   ad: [
-    [ "noSync", require("./noSyncCheck.js") ],
-    [ "foundSAMsCheck", require("./foundSAMsCheck.js") ],
-    [ "disabledCheck", require("./disabledCheck.js") ],
-    [ "ignoreGroupCheck", require("./ignoreGroupCheck.js") ]
-  ]
-
+    ["noSync", require("./noSyncCheck.js")],
+    ["foundSAMsCheck", require("./foundSAMsCheck.js")],
+    ["disabledCheck", require("./disabledCheck.js")],
+    ["ignoreGroupCheck", require("./ignoreGroupCheck.js")],
+  ],
 };
 
 module.exports = rules;
