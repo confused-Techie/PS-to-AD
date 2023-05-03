@@ -42,7 +42,10 @@ async function compare(psData, adData, config) {
     failedAD: 0,
   };
 
-  rules.duplicatePSUserCheck(state);
+  // Loop through initial checks
+  for (let i = 0; i < rules.beforePS.length; i++ ) {
+    await rules.beforePS[i][1](state);
+  }
 
   // So lets write this as the only method and cross my damn fingers
   // Assuming we remove support for multiple algo options, and only use the 'recursive'
@@ -56,34 +59,13 @@ async function compare(psData, adData, config) {
     ) {
       let user = school.details.staffs.staff[usrIdx];
 
-      let exclusionCheckRes = await rules.exclusionCheck(user, state);
+      // Now lets loop through all the checks we have
+      for (let i = 0; i < rules.ps.length; i++) {
+        let check = await rules.ps[i][1](user, state);
 
-      if (validRuleReturn(exclusionCheckRes)) {
-        continue;
-      }
-
-      let serviceAccountCheckRes = rules.serviceAccountCheck(user, state);
-
-      if (validRuleReturn(serviceAccountCheckRes)) {
-        continue;
-      }
-
-      let dcidMatchRes = await rules.dcidMatch(user, state);
-
-      if (validRuleReturn(dcidMatchRes)) {
-        continue;
-      }
-
-      let dcidMatchEmployeeIDRes = await rules.dcidMatchEmployeeID(user, state);
-
-      if (validRuleReturn(dcidMatchEmployeeIDRes)) {
-        continue;
-      }
-
-      let nameMatchCheck = await rules.nameMatchCheck(user, state);
-
-      if (validRuleReturn(nameMatchCheck)) {
-        continue;
+        if (validRuleReturn(check)) {
+          continue staffLoop;
+        }
       }
 
       // We couldn't find the user by DCID or by name. We could keep trying, but for now lets mark error
@@ -96,31 +78,16 @@ async function compare(psData, adData, config) {
 
   // Now that we have properly matched all users in powerschool, we still have to consider AD users.
   // But since powerschool is the master copy this will have to be done differently.
-  for (let usrIdx = 0; usrIdx < adData.length; usrIdx++) {
+  adLoop: for (let usrIdx = 0; usrIdx < adData.length; usrIdx++) {
     let user = adData[usrIdx];
 
-    let noSync = rules.noSync(user, state);
+    // Loop through our AD rules
+    for (let i = 0; i < rules.ad.length; i++) {
+      let check = await rules.ad[i][1](user, state);
 
-    if (validRuleReturn(noSync)) {
-      continue;
-    }
-
-    let foundSAMsCheck = rules.foundSAMsCheck(user, state);
-
-    if (validRuleReturn(foundSAMsCheck)) {
-      continue;
-    }
-
-    let disabledCheck = rules.disabledCheck(user, state);
-
-    if (validRuleReturn(disabledCheck)) {
-      continue;
-    }
-
-    let ignoreGroupCheck = rules.ignoreGroupCheck(user, state);
-
-    if (validRuleReturn(ignoreGroupCheck)) {
-      continue;
+      if (validRuleReturn(check)) {
+        continue adLoop;
+      }
     }
 
     // Which since PowerSchool is the master copy, in the future the resulting
