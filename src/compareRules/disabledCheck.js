@@ -3,7 +3,7 @@ function disabledCheck(user, state) {
     // The User has been disabled via AD, and can be ignored for now.
     state.disabledUserAD++;
     return true;
-  } 
+  }
 }
 
 module.exports = disabledCheck;

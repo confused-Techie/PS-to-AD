@@ -39,7 +39,7 @@ async function compare(psData, adData, config) {
     failedPS: 0,
     noSyncAD: 0,
     disabledUserAD: 0,
-    failedAD: 0
+    failedAD: 0,
   };
 
   rules.duplicatePSUserCheck(state);
@@ -142,7 +142,6 @@ async function compare(psData, adData, config) {
   );
   return state.changeTable;
 }
-
 
 function validRuleReturn(val) {
   if (typeof val === "boolean" && val) {

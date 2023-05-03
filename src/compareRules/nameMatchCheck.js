@@ -31,7 +31,6 @@ async function nameMatchCheck(user, state) {
       );
       state.foundSAMs.push(nameMatch.SamAccountName);
       return true;
-
     }
   }
 }

@@ -34,13 +34,6 @@ the powershell command based on the configuration&#39;s script.</p>
 <dt><a href="#compare">compare(psData, adData, config)</a> ⇒ <code>object</code></dt>
 <dd><p>Compares data between both data sources to transform them as needed.</p>
 </dd>
-<dt><a href="#adFindByFirstLast">adFindByFirstLast(ad_data, first, last)</a> ⇒ <code>object</code> | <code>null</code></dt>
-<dd><p>Takes an Active Directory Data Object and iterates through it
-until it is able to find a proper match to the first and last name provided.</p>
-</dd>
-<dt><a href="#adFindByAttribute">adFindByAttribute(adData, ext, config)</a> ⇒ <code>object</code> | <code>null</code></dt>
-<dd><p>Uses the configured attribute to search for match to the passed data field.</p>
-</dd>
 <dt><a href="#managePowerSchoolData">managePowerSchoolData()</a></dt>
 <dd><p>Used to abstract away powerschool configurations and interactions from the main module</p>
 </dd>
@@ -149,36 +142,6 @@ waiting to take effect.
 | psData | <code>object</code> | The PowerSchool Data Object as read from disk. |
 | adData | <code>object</code> | The ActiveDirectory Data Object as read from disk. |
 | config | <code>object</code> | The normalized config |
-
-<a name="adFindByFirstLast"></a>
-
-## adFindByFirstLast(ad_data, first, last) ⇒ <code>object</code> \| <code>null</code>
-Takes an Active Directory Data Object and iterates through it
-until it is able to find a proper match to the first and last name provided.
-
-**Kind**: global function  
-**Returns**: <code>object</code> \| <code>null</code> - Returns either the properly indexed location for the entry
-within the provided ad_data or will return `null`  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| ad_data | <code>object</code> | The ActiveDirectory Object as Read from Disk. |
-| first | <code>string</code> | The First name to match |
-| last | <code>string</code> | The Last Name to Match |
-
-<a name="adFindByAttribute"></a>
-
-## adFindByAttribute(adData, ext, config) ⇒ <code>object</code> \| <code>null</code>
-Uses the configured attribute to search for match to the passed data field.
-
-**Kind**: global function  
-**Returns**: <code>object</code> \| <code>null</code> - AN object if the user is found, null otherwise  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| adData | <code>object</code> | the active directory data passed. |
-| ext | <code>string</code> | The value of the field we are matching against. |
-| config | <code>object</code> | The configuration |
 
 <a name="managePowerSchoolData"></a>
 

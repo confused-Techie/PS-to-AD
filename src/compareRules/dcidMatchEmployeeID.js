@@ -1,9 +1,7 @@
 const helper = require("./helpers.js");
 
 async function dcidMatchEmployeeID(user, state) {
-
   if (state.config.app?.checkEmployeeID) {
-
     // Then lets check in case the employee contains the right dcid
     let extMatch = await helper.adFindByAttribute(
       state.adData,
@@ -12,7 +10,6 @@ async function dcidMatchEmployeeID(user, state) {
     );
 
     if (extMatch !== null) {
-
       state.successMatchesSecondaryPS++;
       if (state.config.app.outputMatched) {
         state.changeTable.push(
