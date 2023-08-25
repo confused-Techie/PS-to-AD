@@ -43,8 +43,10 @@ async function compare(psData, adData, config) {
   };
 
   // Loop through initial checks
-  for (let i = 0; i < rules.beforePS.length; i++) {
-    await rules.beforePS[i][1](state);
+  if (Array.isArray(rules?.before)) {
+    for (let i = 0; i < rules.before.length; i++) {
+      await rules.before[i][1](state);
+    }
   }
 
   // So lets write this as the only method and cross my damn fingers

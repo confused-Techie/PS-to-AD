@@ -3,7 +3,7 @@
  */
 
 const rules = {
-  beforePS: [["duplicatePSUserCheck", require("./duplicatePSUserCheck.js")]],
+  before: [["duplicatePSUserCheck", require("./duplicatePSUserCheck.js")]],
 
   ps: [
     ["exclusionCheck", require("./exclusionCheck.js")],
