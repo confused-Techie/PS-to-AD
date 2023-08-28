@@ -165,24 +165,25 @@ async function getStaffList(schoolArray, url, accessToken) {
         let pageToCheck = 2;
         let totalCount = staffCount.data.resource.count;
 
-        while (totalCount - (pageLoops * 100) > 100) {
-
+        while (totalCount - pageLoops * 100 > 100) {
           let moreStaffDetails = await axios({
             method: "get",
             url: `${url}/ws/v1/school/${school.id}/staff?expansions=emails,addresses,phones,school_affiliations&extensions=u_dyn_schoolstaff_1,u_schoolstaffuserfields&page=${pageToCheck}`,
             headers: {
               Authorization: `Bearer ${accessToken}`,
-              Accept: "application/json"
-            }
+              Accept: "application/json",
+            },
           });
 
-          staffDetails.data.staffs.staff = staffDetails.data.staffs.staff.concat(moreStaffDetails.data.staffs.staff);
+          staffDetails.data.staffs.staff =
+            staffDetails.data.staffs.staff.concat(
+              moreStaffDetails.data.staffs.staff
+            );
 
           pageLoops = pageLoops + 1;
           pageToCheck = pageToCheck + 1;
         }
       }
-
     } catch (err) {
       throw err;
     }

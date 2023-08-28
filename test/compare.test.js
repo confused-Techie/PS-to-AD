@@ -9,8 +9,8 @@ const testConfig = {
     skipPS: false,
     skipAD: false,
     noWrite: true,
-    attribute: "extensionAttribute1"
-  }
+    attribute: "extensionAttribute1",
+  },
 };
 
 describe("compare", () => {
@@ -79,27 +79,23 @@ describe("compare", () => {
         GivenName: "The",
         Surname: "Developer",
         SamAccountName: "thDeveloper",
-        Enabled: true
+        Enabled: true,
       },
       {
         GivenName: "Idont",
         Surname: "existInPS",
         SamAccountName: "idexistInPS",
-        Enabled: true
-      }
+        Enabled: true,
+      },
     ];
 
     const res = await compare.compare(psData, adData, testConfig);
 
-    assert.equal(
-      res[0],
-      "Add DCID: 4 to thDeveloper"
-    );
+    assert.equal(res[0], "Add DCID: 4 to thDeveloper");
 
     assert.equal(
       res[1],
       "Not Found: (Active Directory -> PowerSchool) Idont, existInPS; idexistInPS; last Logon Timestamp: undefined"
     );
-
   });
 });
