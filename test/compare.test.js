@@ -3,6 +3,16 @@ const assert = require("node:assert");
 
 const compare = require("../src/integrations/compare.js");
 
+const testConfig = {
+  app: {
+    verbose: true,
+    skipPS: false,
+    skipAD: false,
+    noWrite: true,
+    attribute: "extensionAttribute1"
+  }
+};
+
 describe("compare", () => {
   it("reports users who only exist in PowerSchool", async () => {
     const psData = [
@@ -35,17 +45,7 @@ describe("compare", () => {
       },
     ];
 
-    const config = {
-      app: {
-        verbose: true,
-        skipPS: false,
-        skipAD: false,
-        noWrite: true,
-        attribute: "extensionAttribute1",
-      },
-    };
-
-    const res = await compare.compare(psData, adData, config);
+    const res = await compare.compare(psData, adData, testConfig);
 
     assert.equal(
       res[0],
@@ -73,5 +73,33 @@ describe("compare", () => {
         },
       },
     ];
+
+    const adData = [
+      {
+        GivenName: "The",
+        Surname: "Developer",
+        SamAccountName: "thDeveloper",
+        Enabled: true
+      },
+      {
+        GivenName: "Idont",
+        Surname: "existInPS",
+        SamAccountName: "idexistInPS",
+        Enabled: true
+      }
+    ];
+
+    const res = await compare.compare(psData, adData, testConfig);
+
+    assert.equal(
+      res[0],
+      "Add DCID: 4 to thDeveloper"
+    );
+
+    assert.equal(
+      res[1],
+      "Not Found: (Active Directory -> PowerSchool) Idont, existInPS; idexistInPS; last Logon Timestamp: undefined"
+    );
+
   });
 });
