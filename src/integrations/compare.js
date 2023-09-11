@@ -32,14 +32,14 @@ async function compare(psData, adData, config) {
     changeTable: [], // The variable to collect the change status information
     excludeList: [], // Used to have a safety ignore system
     foundSAMs: [], // Used to help speed up ad check
-    successMatchesPS: 0,
     successMatchesSecondaryPS: 0,
     nameMatchPS: 0,
     addedDCIDPS: 0,
-    failedPS: 0,
     noSyncAD: 0,
     disabledUserAD: 0,
-    failedAD: 0,
+    notFoundPS_AD: 0,
+    notFoundAD_PS: 0,
+    matchedDCID: 0
   };
 
   // Loop through initial checks
@@ -71,7 +71,7 @@ async function compare(psData, adData, config) {
       }
 
       // We couldn't find the user by DCID or by name. We could keep trying, but for now lets mark error
-      state.failedPS++;
+      state.notFoundPS_AD++;
       state.changeTable.push(
         `Not Found: (PowerSchool -> Active Directory) ${user?.name?.first_name}, ${user?.name?.last_name}; DCID: ${user?.users_dcid}; Teacher Number: ${user?.local_id}`
       );
@@ -94,7 +94,7 @@ async function compare(psData, adData, config) {
 
     // Which since PowerSchool is the master copy, in the future the resulting
     // items here may be up for deletion. For now though lets log nicely
-    state.failedAD++;
+    state.notFoundAD_PS++;
     state.changeTable.push(
       `Not Found: (Active Directory -> PowerSchool) ${user?.GivenName}, ${user?.Surname}; ${user?.SamAccountName}; last Logon Timestamp: ${user?.lastLogon}`
     );
@@ -103,11 +103,11 @@ async function compare(psData, adData, config) {
   console.log(`Exclude List Table Length: ${state.excludeList.length}`);
   console.log("PowerSchool Stats:");
   console.log(
-    `DCID Already Present: ${state.successMatchesPS} - DCID in EmployeeID: ${state.successMatchesSecondaryPS} - Name Successfully Matched: ${state.nameMatchPS} - Added DCID: ${state.addedDCIDPS} - No Match: ${state.failedPS}`
+    `DCID Already Present: ${state.matchedDCID} - DCID in EmployeeID: ${state.successMatchesSecondaryPS} - Name Successfully Matched: ${state.nameMatchPS} - Added DCID: ${state.addedDCIDPS} - No Match: ${state.notFoundPS_AD}`
   );
   console.log("Active Directory Stats:");
   console.log(
-    `NoSync Set: ${state.noSyncAD} - Disabled Account: ${state.disabledUserAD} - Failed to Match: ${state.failedAD}`
+    `NoSync Set: ${state.noSyncAD} - Disabled Account: ${state.disabledUserAD} - Failed to Match: ${state.notFoundAD_PS}`
   );
   return state.changeTable;
 }

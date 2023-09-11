@@ -36,10 +36,10 @@ module.exports = rules;
  * - successMatchesSecondaryPS: Count of successfull secondary matches in PowerSchool
  * - nameMatchPS: Count of name based PowerSchool Matches
  * - addedDCIDPS: Count of DCIDs added to users during PowerSchool Checks
- * - failedPS: Count of failed checks within PowerSchool
+ * - notFoundPS_AD: Count of how many users could not be found from PS -> AD
  * - noSyncAD: Count of users in some way set as no sync within AD
  * - disableUsersAD: Count of Disabled Users within AD
- * - failedAD: Count of checks failed within AD
+ * - notFoundAD_PS: Count of how many users could not be found from AD -> PS
  *
  * Then each function can optionall return a boolean. If this boolean is true,
  * then the rule will cause the loop to continue, and finish running the current iteration

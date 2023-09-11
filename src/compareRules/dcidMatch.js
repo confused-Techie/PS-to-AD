@@ -12,7 +12,7 @@ async function dcidMatch(user, state) {
   );
 
   if (extMatch !== null) {
-    state.successMatchesPS++;
+    state.matchedDCID++;
 
     if (state.config.app.outputMatched) {
       state.changeTable.push(
