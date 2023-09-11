@@ -39,7 +39,7 @@ async function compare(psData, adData, config) {
     disabledUserAD: 0,
     notFoundPS_AD: 0,
     notFoundAD_PS: 0,
-    matchedDCID: 0
+    matchedDCID: 0,
   };
 
   // Loop through initial checks
